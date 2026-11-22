@@ -1,0 +1,733 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>교대링 근무표 관리</title>
+<style>
+:root{--bg:#F3F4F7;--card:#fff;--ink:#1C2233;--sub:#6B7180;--line:#E6E8EE;--soft:#F1F2F6;--acc:#1C2340;--blue:#3D6BF5;--ok:#1F9D63;--warn:#D98A00;--bad:#E0484D}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--ink);font-family:"Pretendard","Apple SD Gothic Neo","Malgun Gothic",-apple-system,sans-serif;letter-spacing:-.2px;-webkit-text-size-adjust:100%}
+button,input,select,textarea{font:inherit;color:inherit}
+.wrap{max-width:1180px;margin:0 auto;padding:16px 16px 120px}
+header{display:flex;align-items:center;gap:12px;padding:6px 2px 14px;flex-wrap:wrap}
+.logo{width:40px;height:40px;border-radius:11px;background:var(--acc);display:flex;align-items:center;justify-content:center;flex:none}
+header h1{margin:0;font-size:20px;font-weight:800;letter-spacing:-.5px}
+header small{display:block;font-size:12px;color:var(--sub);font-weight:500;margin-top:1px}
+.hsp{flex:1}
+.pill{display:inline-flex;align-items:center;gap:6px;height:30px;padding:0 11px;border-radius:15px;font-size:12.5px;font-weight:700;background:var(--card);box-shadow:inset 0 0 0 1px var(--line);white-space:nowrap}
+.dot{width:8px;height:8px;border-radius:4px;background:var(--sub)}
+.dot.on{background:var(--ok)}.dot.off{background:var(--bad)}.dot.dirty{background:var(--warn)}
+.tabs{display:flex;gap:4px;background:#E6E8EE;border-radius:14px;padding:4px;margin-bottom:14px}
+.tabs button{flex:1;border:0;background:none;height:40px;border-radius:11px;font-size:14px;font-weight:700;color:var(--sub);cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px}
+.tabs button.on{background:var(--card);color:var(--ink);box-shadow:0 1px 3px rgba(0,0,0,.08)}
+.badge{min-width:18px;height:18px;border-radius:9px;background:var(--bad);color:#fff;font-size:11px;display:inline-flex;align-items:center;justify-content:center;padding:0 5px}
+.card{background:var(--card);border-radius:18px;padding:16px;box-shadow:0 1px 2px rgba(20,30,60,.04)}
+.card+.card{margin-top:12px}
+.ct{display:flex;align-items:center;gap:8px;margin:0 0 12px;font-size:15px;font-weight:800;flex-wrap:wrap;row-gap:8px;word-break:keep-all}
+.ct small{font-weight:500;color:var(--sub);font-size:12px}
+.ct .sp{flex:1}
+.lbl{display:block;font-size:12px;font-weight:700;color:var(--sub);margin:0 0 6px}
+.inp{width:100%;height:42px;border:0;border-radius:11px;background:var(--soft);padding:0 12px;font-size:15px;outline:none;transition:box-shadow .15s}
+.inp:focus{box-shadow:inset 0 0 0 2px var(--blue)}
+.inp.bad{box-shadow:inset 0 0 0 1.5px var(--bad)}
+textarea.inp{height:auto;padding:11px 12px;resize:vertical;line-height:1.5}
+.ferr{font-size:12px;color:var(--bad);font-weight:600;margin-top:5px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.f{margin-bottom:12px}
+.btn{border:0;background:var(--soft);height:40px;padding:0 14px;border-radius:11px;font-size:14px;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:6px;white-space:nowrap}
+.btn:hover{filter:brightness(.97)}
+.btn:active{transform:scale(.98)}
+.btn.pri{background:var(--acc);color:#fff}
+.btn.blue{background:var(--blue);color:#fff}
+.btn.red{background:#FDECEC;color:var(--bad)}
+.btn.sm{height:32px;padding:0 10px;font-size:13px;border-radius:9px}
+.btn.ghost{background:none;box-shadow:inset 0 0 0 1px var(--line)}
+.btn[disabled]{opacity:.45;cursor:default}
+.row{display:flex;align-items:center;gap:8px}
+.between{justify-content:space-between}
+.chip{display:inline-flex;align-items:center;justify-content:center;font-weight:800;border-radius:7px;white-space:nowrap;font-size:12px;min-width:24px;height:22px;padding:0 6px}
+.chip.s{font-size:10.5px;min-width:20px;height:19px;padding:0 4px;border-radius:6px}
+.trow{display:grid;grid-template-columns:26px 1fr 64px 36px auto 34px;gap:6px;align-items:center;margin-bottom:6px}
+.trow input[type=color]{width:36px;height:36px;border:0;padding:0;background:none;cursor:pointer}
+.trow .inp{height:36px;font-size:14px}
+.ck{display:flex;align-items:center;gap:4px;font-size:12px;color:var(--sub);font-weight:600;white-space:nowrap}
+.seq{display:flex;flex-wrap:wrap;gap:4px;padding:10px;background:var(--soft);border-radius:12px;min-height:46px;align-items:center}
+.seq .it{position:relative;cursor:pointer}
+.seq .it i{position:absolute;top:-6px;left:50%;transform:translateX(-50%);font-style:normal;font-size:9px;color:var(--sub)}
+.seq .it:hover .chip{outline:2px solid var(--bad)}
+.seq .ins{width:6px;height:22px;border-radius:3px;cursor:pointer}
+.seq .ins.on{background:var(--blue)}
+.adds{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.teamrow{display:grid;grid-template-columns:1fr auto;gap:8px;align-items:center;margin-bottom:6px}
+.stepper{display:flex;align-items:center;gap:4px}
+.stepper b{min-width:64px;text-align:center;font-size:13px}
+.layout{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.05fr);gap:14px;align-items:start}
+.layout>*{min-width:0}
+.card{min-width:0;overflow:hidden}
+.pvjump{display:none}
+.sticky{position:sticky;top:12px}
+.ttabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}
+.ttabs button{border:0;background:var(--soft);height:32px;padding:0 13px;border-radius:16px;font-size:13px;font-weight:700;cursor:pointer}
+.ttabs button.on{background:var(--acc);color:#fff}
+.cal{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));border-top:1px solid var(--line);border-left:1px solid var(--line)}
+.cal .h{font-size:11px;font-weight:700;color:var(--sub);text-align:center;padding:6px 0;border-right:1px solid var(--line);border-bottom:1px solid var(--line);background:#FAFBFC}
+.cal .d{height:58px;border-right:1px solid var(--line);border-bottom:1px solid var(--line);padding:3px;display:flex;flex-direction:column;gap:3px;font-size:11px;font-weight:700}
+.cal .d.o{opacity:.3}
+.cal .d.td{background:#EEF3FF;box-shadow:inset 0 0 0 2px var(--blue)}
+.cal .d .lb{height:20px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800}
+.sun{color:var(--bad)}.sat{color:var(--blue)}
+.gwrap{overflow-x:auto;margin-top:6px;border-radius:10px;box-shadow:inset 0 0 0 1px var(--line)}
+.gt{border-collapse:collapse;font-size:11px}
+.gt th,.gt td{padding:0;text-align:center;min-width:28px;height:30px;border-bottom:1px solid var(--line)}
+.gt th{font-weight:700;color:var(--sub);background:#FAFBFC;line-height:1.1}
+.gt th small{display:block;font-size:9px;font-weight:600}
+.gt td.n,.gt th.n{position:sticky;left:0;background:#fff;min-width:52px;font-weight:800;font-size:12px;box-shadow:1px 0 0 var(--line)}
+.gt .tdc{background:#EEF3FF}
+.mnav{display:flex;align-items:center;gap:6px}
+.mnav b{min-width:92px;text-align:center;font-size:15px}
+.checks{display:flex;flex-direction:column;gap:6px}
+.chk{display:flex;gap:8px;align-items:flex-start;font-size:13px;line-height:1.45;padding:8px 10px;border-radius:10px}
+.chk.ok{background:#EAF7F0;color:#13643F}.chk.warn{background:#FFF6E5;color:#7A5200}.chk.bad{background:#FDECEC;color:#A12A2E}.chk.info{background:var(--soft);color:var(--sub)}
+.chk b{flex:none}
+.actbar{position:fixed;left:0;right:0;bottom:0;background:rgba(255,255,255,.96);backdrop-filter:blur(8px);box-shadow:0 -1px 0 var(--line);padding:12px 16px calc(12px + env(safe-area-inset-bottom));z-index:5}
+.actbar .in{max-width:1180px;margin:0 auto;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.actbar .msg{flex:1;font-size:13px;color:var(--sub);min-width:160px}
+.list .it{display:flex;align-items:center;gap:12px;padding:12px 4px;border-bottom:1px solid var(--line)}
+.list .it:last-child{border-bottom:0}
+.list .ico{width:38px;height:38px;border-radius:11px;background:var(--soft);display:flex;align-items:center;justify-content:center;font-weight:800;color:var(--sub);flex:none}
+.list .tx{flex:1;min-width:0}
+.list .tx b{display:block;font-size:15px}
+.list .tx small{display:block;font-size:12px;color:var(--sub);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tag{font-size:11px;font-weight:800;padding:2px 7px;border-radius:6px;background:#FFF1D6;color:#8A5A00;margin-left:6px;vertical-align:2px}
+.tag.new{background:#E3F6EC;color:#13643F}
+.empty{text-align:center;color:var(--sub);font-size:14px;padding:34px 10px;line-height:1.6}
+.drop{border:2px dashed #CBD0DA;border-radius:14px;padding:4px}
+.toast{position:fixed;left:50%;bottom:96px;transform:translateX(-50%) translateY(10px);background:rgba(20,24,36,.94);color:#fff;padding:11px 16px;border-radius:12px;font-size:14px;font-weight:600;opacity:0;transition:.2s;pointer-events:none;z-index:20;max-width:90vw;text-align:center}
+.toast.on{opacity:1;transform:translateX(-50%)}
+.modal{position:fixed;inset:0;background:rgba(15,20,35,.45);display:none;align-items:center;justify-content:center;z-index:30;padding:20px}
+.modal.on{display:flex}
+.modal .box{background:#fff;border-radius:20px;padding:20px;max-width:420px;width:100%}
+.modal h3{margin:0 0 8px;font-size:18px}
+.modal p{margin:0 0 16px;font-size:14px;color:var(--sub);line-height:1.55;white-space:pre-line}
+.help{font-size:13px;color:var(--sub);line-height:1.7;background:var(--soft);border-radius:12px;padding:12px 14px}
+.help ol{margin:4px 0 0;padding-left:20px}
+code{background:#E9ECF3;border-radius:5px;padding:1px 5px;font-size:12px}
+/* 받은 근무표 목록 */
+.seg{display:flex;gap:6px;flex-wrap:wrap}
+.seg button{border:0;background:var(--soft);height:34px;padding:0 13px;border-radius:17px;font-size:13px;font-weight:700;color:var(--sub);cursor:pointer;display:inline-flex;align-items:center;gap:6px}
+.seg button.on{background:var(--acc);color:#fff}
+.seg button .n{font-size:11px;background:rgba(0,0,0,.08);border-radius:9px;padding:1px 7px}
+.seg button.on .n{background:rgba(255,255,255,.22)}
+.inbox{display:flex;flex-direction:column;gap:10px;margin-top:12px}
+.sub{background:var(--card);border-radius:16px;padding:14px 14px 14px 16px;display:flex;gap:12px;align-items:flex-start;cursor:pointer;box-shadow:0 1px 2px rgba(20,30,60,.05);position:relative;transition:box-shadow .15s;overflow:hidden}
+.sub:hover{box-shadow:0 2px 10px rgba(20,30,60,.1)}
+.sub:active{transform:scale(.995)}
+.sub.new::before{content:'';position:absolute;left:0;top:14px;bottom:14px;width:4px;border-radius:0 3px 3px 0;background:var(--blue)}
+.sub .av{width:44px;height:44px;border-radius:13px;background:#EEF2FF;color:var(--blue);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:18px;flex:none}
+.sub .tx{flex:1;min-width:0}
+.sub .t1{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.sub .t1 b{font-size:16px}
+.sub .t2{font-size:12.5px;color:var(--sub);margin-top:3px}
+.sub .memo{margin-top:8px;font-size:13px;line-height:1.5;background:#FFF9EC;border-radius:9px;padding:7px 10px;color:#5C4A1E;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.sub .go{align-self:center;color:var(--sub);font-size:22px;flex:none}
+.st{font-size:11px;font-weight:800;padding:2px 8px;border-radius:6px;white-space:nowrap}
+.st.new{background:#E7EEFF;color:#2348B8}.st.hold{background:#FFF1D6;color:#8A5A00}.st.approved{background:#E3F6EC;color:#13643F}.st.rejected{background:#FDECEC;color:#A12A2E}
+.banner{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.banner .grow{flex:1;min-width:200px}
+.sv{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;color:var(--sub);white-space:nowrap}
+.spin{width:14px;height:14px;border:2px solid #CBD0DA;border-top-color:var(--blue);border-radius:50%;animation:sp .8s linear infinite;display:inline-block}
+@keyframes sp{to{transform:rotate(360deg)}}
+details.fold{background:var(--card);border-radius:18px;padding:0 16px;margin-top:12px}
+details.fold summary{cursor:pointer;font-weight:800;font-size:15px;padding:16px 0;list-style:none;display:flex;align-items:center;gap:8px}
+details.fold summary::-webkit-details-marker{display:none}
+details.fold summary::after{content:'›';margin-left:auto;transform:rotate(90deg);color:var(--sub);font-size:20px;transition:.15s}
+details.fold[open] summary::after{transform:rotate(-90deg)}
+details.fold>div{padding-bottom:16px}
+.okline{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:700;padding:9px 12px;border-radius:10px;margin-top:10px;line-height:1.5}
+.okline.ok{background:#EAF7F0;color:#13643F}.okline.bad{background:#FDECEC;color:#A12A2E}.okline.info{background:var(--soft);color:var(--sub)}
+.steps{counter-reset:s;list-style:none;padding:0;margin:0}
+.steps li{counter-increment:s;position:relative;padding:0 0 12px 34px;font-size:13.5px;line-height:1.6}
+.steps li::before{content:counter(s);position:absolute;left:0;top:0;width:24px;height:24px;border-radius:12px;background:var(--acc);color:#fff;font-size:12px;font-weight:800;display:flex;align-items:center;justify-content:center}
+.rj{display:flex;flex-direction:column;gap:6px;margin-bottom:10px}
+.rj label{display:flex;align-items:center;gap:8px;font-size:14px;padding:9px 11px;border-radius:10px;background:var(--soft);cursor:pointer}
+@media (max-width:900px){.layout{grid-template-columns:minmax(0,1fr)}.sticky{position:static}.pvjump{display:inline-flex}}
+@media (max-width:520px){.sub{padding:12px}.sub .av{width:38px;height:38px;font-size:16px}#srvPill,#ghPill{display:none}.wrap{padding:12px 12px 140px}.grid2{grid-template-columns:1fr}.trow{grid-template-columns:24px 1fr 52px 34px auto 32px}.cal .d{height:50px}.hsp{display:none}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="logo"><svg width="30" height="30" viewBox="-36 -36 72 72"><path d="M-32 -15 A12 12 0 0 1 -15 -32 Z" fill="#E8ECF5"/><path d="M15 -32 A12 12 0 0 1 32 -15 Z" fill="#E8ECF5"/><path d="M4.17 -23.64 A24 24 0 0 1 22.55 8.21" fill="none" stroke="#FFCF1A" stroke-width="7" stroke-linecap="round"/><path d="M18.39 15.43 A24 24 0 0 1 -18.39 15.43" fill="none" stroke="#4F86F7" stroke-width="7" stroke-linecap="round"/><path d="M-22.55 8.21 A24 24 0 0 1 -4.17 -23.64" fill="none" stroke="#E8ECF5" stroke-width="7" stroke-linecap="round"/><path d="M0 -11 V0 L8 6" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+    <div><h1>교대링 근무표 관리</h1><small>받은 근무표 확인 · 승인 · 배포</small></div>
+    <div class="hsp"></div>
+    <span class="pill" id="srvPill"><span class="dot"></span>접수 서버</span>
+    <span class="pill" id="ghPill"><span class="dot"></span>GitHub</span>
+    <span class="pill" id="cntPill">등록 0곳</span>
+  </header>
+  <nav class="tabs">
+    <button data-t="review" class="on" onclick="tab('review')">받은 근무표 <span id="tabBadge"></span></button>
+    <button data-t="list" onclick="tab('list')">등록된 목록</button>
+    <button data-t="set" onclick="tab('set')">설정</button>
+  </nav>
+  <main id="main"></main>
+</div>
+<div class="actbar" id="actbar"></div>
+<div class="toast" id="toast"></div>
+<div class="modal" id="modal" onclick="if(event.target===this)closeModal()"><div class="box" id="mbox"></div></div>
+<input type="file" id="fileIn" accept=".json,application/json" style="display:none" onchange="importFile(this)">
+<script>
+/* ===== 공통 ===== */
+const $ = s => document.querySelector(s);
+const esc = t => String(t ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const pad = n => String(n).padStart(2, '0');
+const uid = () => Math.random().toString(36).slice(2, 9);
+const clone = o => JSON.parse(JSON.stringify(o));
+const mod = (a, b) => ((a % b) + b) % b;
+const ds = (y, m, d) => `${y}-${pad(m)}-${pad(d)}`;
+const dn = s => Math.round(Date.UTC(+s.slice(0, 4), +s.slice(5, 7) - 1, +s.slice(8, 10)) / 86400000);
+const nd = n => { const d = new Date(n * 86400000); return ds(d.getUTCFullYear(), d.getUTCMonth() + 1, d.getUTCDate()); };
+const todayStr = () => { const d = new Date(); return ds(d.getFullYear(), d.getMonth() + 1, d.getDate()); };
+const dow = s => new Date(Date.UTC(+s.slice(0, 4), +s.slice(5, 7) - 1, +s.slice(8, 10))).getUTCDay();
+const daysIn = (y, m) => new Date(y, m, 0).getDate();
+const WD = ['일', '월', '화', '수', '목', '금', '토'];
+const hex2 = h => { h = (h || '#888888').replace('#', ''); if (h.length === 3) h = h.split('').map(c => c + c).join(''); const n = parseInt(h.slice(0, 6), 16); return [n >> 16 & 255, n >> 8 & 255, n & 255]; };
+const rgbHex = a => '#' + a.map(v => Math.round(Math.max(0, Math.min(255, v))).toString(16).padStart(2, '0')).join('');
+const mix = (a, b, t) => { const x = hex2(a), y = hex2(b); return rgbHex(x.map((v, i) => v + (y[i] - v) * t)); };
+const lum = c => { const [r, g, b] = hex2(c); return (0.299 * r + 0.587 * g + 0.114 * b) / 255; };
+function sc(t) {
+  const c = t.color || '#888888';
+  if (t.plain) return { bg: mix(c, '#FFFFFF', .86), fg: mix(c, '#000000', .1) };
+  if (lum(c) < .25) return { bg: c, fg: '#FFFFFF' };
+  return { bg: mix(c, '#FFFFFF', .7), fg: mix(c, '#000000', .55) };
+}
+const chip = (t, s = '', txt) => t ? (k => `<span class="chip ${s}" style="background:${k.bg};color:${k.fg}">${esc(txt ?? t.label)}</span>`)(sc(t)) : `<span class="chip ${s}" style="background:#F1F2F6;color:#B0B4BE">?</span>`;
+const typeOf = (c, id) => c.types.find(t => t.id === id);
+const teamShift = (c, team, s) => (!c.pattern.length) ? null : typeOf(c, c.pattern[mod(dn(s) - dn(c.baseDate) + (team.offset || 0), c.pattern.length)]);
+const enc = o => 'CHAN1:' + btoa(unescape(encodeURIComponent(JSON.stringify(o))));
+const dec = s => JSON.parse(decodeURIComponent(escape(atob(s.replace(/\s/g, '')))));
+function toast(m) { const t = $('#toast'); t.textContent = m; t.classList.add('on'); clearTimeout(toast._t); toast._t = setTimeout(() => t.classList.remove('on'), 2200); }
+function modal(title, msg, btns) {
+  $('#mbox').innerHTML = `<h3>${esc(title)}</h3><p>${esc(msg)}</p><div class="row" style="justify-content:flex-end;gap:8px">${btns.map((b, i) => `<button class="btn ${b.cls || ''}" onclick="closeModal();(window._mb[${i}]||(()=>{}))()">${esc(b.t)}</button>`).join('')}</div>`;
+  window._mb = btns.map(b => b.fn); $('#modal').classList.add('on');
+}
+function closeModal() { $('#modal').classList.remove('on'); }
+const copy = t => (navigator.clipboard ? navigator.clipboard.writeText(t) : Promise.reject()).then(() => true, () => {
+  const a = document.createElement('textarea'); a.value = t; document.body.appendChild(a); a.select(); let ok = false; try { ok = document.execCommand('copy'); } catch (e) { } a.remove(); return ok;
+});
+
+/* ===== 상태 ===== */
+const LS = k => { try { return JSON.parse(localStorage.getItem(k) || 'null'); } catch (e) { return null; } };
+const LSset = (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) { } };
+let GH = Object.assign({ owner: 'scm0726', repo: 'gyodaering-data', branch: 'main', path: 'companies.json', token: '' }, LS('gyAdminGH') || {});
+let DATA = LS('gyAdminData') || { v: 1, updated: '', companies: [] };
+let SHA = LS('gyAdminSha') || null;      // GitHub 파일 버전
+let DIRTY = LS('gyAdminDirty') || 0;     // 저장 안 한 변경 수
+let ghState = 'none';                      // none | ok | err | busy
+let SRV = Object.assign({ url: '', key: '' }, LS('gyAdminSrv') || {});
+let INBOX = LS('gyAdminInbox') || { items: [], counts: { new: 0, hold: 0, approved: 0, rejected: 0 }, at: 0 };
+let srvState = 'none';                     // none | ok | err | busy | auth
+let inFilter = 'new';
+let view = 'review';
+let D = null;                              // 편집 중인 근무표 { key, name, region, dept, note, ver, c, fromKey }
+let pv = { team: 0, y: 0, m: 0 };
+let listQ = '';
+function persist() { LSset('gyAdminData', DATA); LSset('gyAdminDirty', DIRTY); LSset('gyAdminSha', SHA); updHeader(); }
+function updHeader() {
+  const sp = $('#srvPill');
+  const ss = { none: ['', '접수 서버 미연결'], ok: ['on', '접수 서버 연결됨'], err: ['off', '접수 서버 연결 실패'], auth: ['off', '관리자 키 틀림'], busy: ['', '접수 서버 확인 중…'] }[srvState];
+  sp.innerHTML = `<span class="dot ${ss[0]}"></span>${ss[1]}`;
+  const nb = (INBOX.counts && INBOX.counts.new) || 0;
+  $('#tabBadge').innerHTML = nb ? `<span class="badge">${nb}</span>` : '';
+  document.title = (nb ? `(${nb}) ` : '') + '교대링 근무표 관리';
+  const p = $('#ghPill');
+  const st = { none: ['', 'GitHub 미연결'], ok: ['on', 'GitHub 연결됨'], err: ['off', 'GitHub 연결 실패'], busy: ['', 'GitHub 확인 중…'] }[ghState];
+  p.innerHTML = `<span class="dot ${st[0]}"></span>${st[1]}`;
+  $('#cntPill').innerHTML = DIRTY ? `<span class="dot dirty"></span>등록 ${DATA.companies.length}곳 · 저장 안 됨 ${DIRTY}` : `등록 ${DATA.companies.length}곳`;
+  document.querySelectorAll('.tabs button').forEach(b => b.classList.toggle('on', b.dataset.t === view));
+  renderBar();
+}
+function tab(t) { view = t; render(); window.scrollTo(0, 0); }
+function render() {
+  updHeader();
+  if (view === 'review') renderReview(); else if (view === 'list') renderList(); else renderSettings();
+}
+
+/* ===== 하단 바 ===== */
+function renderBar() {
+  const b = $('#actbar');
+  if (view === 'review' && D) {
+    const ex = DATA.companies.find(x => x.key === D.key);
+    const errs = checks().filter(x => x.lv === 'bad').length;
+    b.innerHTML = `<div class="in"><span class="msg">${errs ? `<b style="color:var(--bad)">고쳐야 할 문제 ${errs}개</b>가 있어요` : ex ? `기존 '${esc(ex.name)}'을(를) 새 버전(v${(ex.ver || 1) + 1})으로 바꿔요` : '확인이 끝났으면 승인해서 목록에 추가하세요'}</span>
+      <button class="btn ghost" onclick="cancelEdit()">${D.subId ? '← 목록' : '취소'}</button>
+      ${D.subId ? `<button class="btn ghost" onclick="holdSub()">보류</button><button class="btn red" onclick="rejectSub()">거절</button>` : ''}
+      <button class="btn ghost" onclick="copyTest()">듀티로그 테스트 코드</button>
+      <button class="btn pri" onclick="approve()" ${errs || busyApprove ? 'disabled' : ''}>${busyApprove ? '등록 중…' : ex ? '승인 · 업데이트' : '승인 · 등록'}</button></div>`;
+    b.style.display = '';
+  } else if (DIRTY) {
+    b.innerHTML = `<div class="in"><span class="msg"><b style="color:var(--warn)">저장 안 한 변경 ${DIRTY}개</b> — GitHub에 저장해야 사용자 앱에 반영돼요</span>
+      <button class="btn ghost" onclick="downloadJSON()">파일로 내려받기</button>
+      <button class="btn blue" onclick="saveGH()">GitHub에 저장</button></div>`;
+    b.style.display = '';
+  } else b.style.display = 'none';
+}
+
+/* ===== 받은 근무표: 자동 수신함 ===== */
+let pasteErr = '';
+const ST_NAME = { new: '새로 받음', hold: '보류', approved: '승인됨', rejected: '거절됨' };
+function ago(t) {
+  if (!t) return '';
+  const d = new Date(String(t).replace(' ', 'T') + '+09:00'), m = Math.round((Date.now() - d) / 60000);
+  if (isNaN(m)) return String(t);
+  if (m < 1) return '방금'; if (m < 60) return m + '분 전'; if (m < 1440) return Math.floor(m / 60) + '시간 전';
+  if (m < 10080) return Math.floor(m / 1440) + '일 전'; return String(t).slice(0, 10);
+}
+const timeStr = ms => { const d = new Date(ms); return `${pad(d.getHours())}:${pad(d.getMinutes())}`; };
+function renderReview() {
+  if (D) { renderEditor(); return; }
+  const cnt = INBOX.counts || {}, items = INBOX.items.filter(x => inFilter === 'all' || x.status === inFilter);
+  const noSrv = !SRV.url || !SRV.key;
+  $('#main').innerHTML = `
+    ${noSrv ? `<div class="card" style="background:#EEF3FF"><div class="ct">접수 서버를 연결해 주세요</div><div style="font-size:14px;line-height:1.6;color:var(--sub)">앱에서 보낸 근무표가 여기에 자동으로 쌓이게 하려면 처음 한 번 서버를 연결해야 해요.</div><button class="btn pri" style="margin-top:12px" onclick="tab('set')">설정으로 가기</button></div>` : `
+    <div class="card"><div class="banner"><div class="seg grow">${['new', 'hold', 'approved', 'rejected', 'all'].map(k => `<button class="${inFilter === k ? 'on' : ''}" onclick="inFilter='${k}';renderReview()">${k === 'all' ? '전체' : ST_NAME[k]}${k !== 'all' && cnt[k] ? ` <span class="n">${cnt[k]}</span>` : ''}</button>`).join('')}</div>
+      <span class="sv">${srvState === 'busy' ? '<span class="spin"></span> 불러오는 중' : INBOX.at ? '업데이트 ' + timeStr(INBOX.at) : ''}</span>
+      <button class="btn sm" onclick="loadInbox()">새로고침</button></div>
+      ${srvState === 'err' ? `<div class="okline bad">접수 서버에 연결하지 못했어요. 인터넷이나 서버 주소를 확인하세요.</div>` : srvState === 'auth' ? `<div class="okline bad">관리자 키가 맞지 않아요. 설정에서 확인하세요.</div>` : ''}</div>
+    <div class="inbox">${items.length ? items.map(subCard).join('') : `<div class="card empty">${inFilter === 'new' ? '새로 받은 근무표가 없어요.<br>앱에서 보내면 여기에 자동으로 나타나요.' : '해당하는 근무표가 없어요.'}</div>`}</div>`}
+    <details class="fold" ${noSrv ? 'open' : ''}><summary>메일·카카오톡으로 받은 코드 붙여넣기</summary><div>
+      <textarea class="inp ${pasteErr ? 'bad' : ''}" id="pasteIn" rows="5" placeholder="[교대링 근무표 등록 요청]&#10;회사: ...&#10;&#10;CHAN1:eyJr..." oninput="pasteErr='';this.classList.remove('bad');const e=$('#pErr');if(e)e.remove()"></textarea>
+      ${pasteErr ? `<div class="ferr" id="pErr">${esc(pasteErr)}</div>` : ''}
+      <div class="row" style="margin-top:10px;gap:8px;flex-wrap:wrap"><button class="btn" onclick="pasteClip()">클립보드에서 붙여넣기</button><span style="flex:1"></span>
+        <button class="btn ghost" onclick="newBlank()">직접 새로 만들기</button><button class="btn pri" onclick="loadPaste()">불러와서 확인</button></div></div></details>`;
+}
+const sameCo = x => DATA.companies.find(c => c.name.trim() === String(x.name || '').trim() && (c.region || '') === (x.region || ''));
+function subCard(x) {
+  const ex = sameCo(x);
+  return `<div class="sub ${x.status === 'new' ? 'new' : ''}" onclick="openSub('${esc(x.id)}')"><span class="av">${esc([...String(x.name)][0] || '?')}</span>
+    <div class="tx"><div class="t1"><b>${esc(x.name)}</b>${x.region ? `<span style="color:var(--sub);font-size:14px">${esc(x.region)}</span>` : ''}<span class="st ${esc(x.status)}">${ST_NAME[x.status] || esc(x.status)}</span>${ex && x.status !== 'approved' ? '<span class="tag">이미 등록됨 · 업데이트</span>' : ''}</div>
+      <div class="t2">${[x.dept, x.teams ? x.teams + '개 조' : '', x.cycle ? x.cycle + '일 주기' : '', ago(x.at)].filter(Boolean).map(esc).join(' · ')}</div>
+      ${x.note ? `<div class="memo">“${esc(x.note)}”</div>` : ''}${x.memo && x.status !== 'new' ? `<div class="t2" style="margin-top:6px">처리 메모: ${esc(x.memo)}</div>` : ''}</div>
+    <span class="go">›</span></div>`;
+}
+
+/* 접수 서버 */
+async function api(action, extra) {
+  const r = await fetch(SRV.url, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(Object.assign({ action, key: SRV.key }, extra || {})), redirect: 'follow' });
+  if (!r.ok) throw 'http';
+  const j = await r.json();
+  if (!j.ok) throw j.err || 'fail';
+  return j;
+}
+let _inboxBusy = false;
+async function loadInbox(quiet) {
+  if (!SRV.url || !SRV.key || _inboxBusy) return;
+  _inboxBusy = true; srvState = 'busy'; updHeader(); if (!quiet && view === 'review' && !D) renderReview();
+  try {
+    const j = await api('list', { limit: 300 });
+    const before = (INBOX.counts && INBOX.counts.new) || 0, had = !!INBOX.at;
+    INBOX = { items: j.items || [], counts: j.counts || {}, at: Date.now() }; LSset('gyAdminInbox', INBOX);
+    srvState = 'ok';
+    if (window.AdminApp && AdminApp.seen) try { AdminApp.seen(INBOX.counts.new || 0); } catch (e) { }
+    if (quiet && had && (INBOX.counts.new || 0) > before) toast(`새 근무표 ${(INBOX.counts.new || 0) - before}건이 들어왔어요`);
+  } catch (e) { srvState = e === 'auth' ? 'auth' : 'err'; }
+  _inboxBusy = false;
+  updHeader(); if (view === 'review' && !D) renderReview();
+}
+function openSub(id) {
+  const x = INBOX.items.find(i => i.id === id); if (!x) return;
+  let p;
+  try { p = parseMsg(x.code); }
+  catch (e) { modal('읽을 수 없는 근무표예요', (typeof e === 'string' ? e : '코드가 손상됐어요.') + '\n거절로 처리할까요?', [{ t: '닫기' }, { t: '거절', cls: 'red', fn: async () => { if (await setSub(id, 'rejected', '코드 손상')) render(); } }]); return; }
+  p.name = x.name || p.name; p.region = x.region || p.region; p.dept = x.dept || p.dept; p.userNote = x.note || p.userNote; p.at = x.at;
+  const ex = sameCo(p);
+  startEdit(p, ex ? ex.key : undefined);
+  D.subId = id; D.subStatus = x.status; render();
+}
+async function setSub(id, status, memo) {
+  try {
+    await api('status', { id, status, memo: memo || '' });
+    const x = INBOX.items.find(i => i.id === id);
+    if (x) { if (INBOX.counts[x.status]) INBOX.counts[x.status]--; x.status = status; x.memo = memo || ''; INBOX.counts[status] = (INBOX.counts[status] || 0) + 1; LSset('gyAdminInbox', INBOX); }
+    if (window.AdminApp && AdminApp.seen) try { AdminApp.seen(INBOX.counts.new || 0); } catch (e) { }
+    updHeader();
+    return true;
+  } catch (e) { toast(e === 'auth' ? '관리자 키가 맞지 않아요' : '접수 서버에 상태를 저장하지 못했어요'); return false; }
+}
+function holdSub() {
+  modal('보류할까요?', '나중에 다시 확인할 근무표로 옮겨요.\n고친 내용은 저장되지 않아요.', [{ t: '취소' }, { t: '보류', cls: 'pri', fn: async () => { const id = D.subId; if (await setSub(id, 'hold', '')) { D = null; render(); toast('보류로 옮겼어요'); } } }]);
+}
+function rejectSub() {
+  const rs = ['이미 등록된 근무표와 같아요', '근무 순서나 조 정보가 부족해요', '실제 회사 근무표가 아니에요', '테스트로 보낸 근무표예요'];
+  $('#mbox').innerHTML = `<h3>거절할까요?</h3><p>사유를 남겨 두면 나중에 보기 편해요. (사용자에게는 보이지 않아요)</p>
+    <div class="rj">${rs.map(r => `<label><input type="radio" name="rj" value="${esc(r)}">${esc(r)}</label>`).join('')}</div>
+    <input class="inp" id="rjEtc" placeholder="직접 입력 (선택)">
+    <div class="row" style="justify-content:flex-end;gap:8px;margin-top:14px"><button class="btn" onclick="closeModal()">취소</button><button class="btn red" onclick="doReject()">거절</button></div>`;
+  $('#modal').classList.add('on');
+}
+async function doReject() {
+  const r = (document.querySelector('input[name=rj]:checked') || {}).value || '', etc = $('#rjEtc').value.trim();
+  closeModal(); const id = D.subId;
+  if (await setSub(id, 'rejected', [r, etc].filter(Boolean).join(' / '))) { D = null; render(); toast('거절했어요'); }
+}
+async function pasteClip() {
+  try { const t = window.AdminApp && AdminApp.getClipboard ? AdminApp.getClipboard() : await navigator.clipboard.readText(); $('#pasteIn').value = t; pasteErr = ''; loadPaste(); }
+  catch (e) { toast('클립보드를 읽을 수 없어요. 직접 붙여넣어 주세요'); $('#pasteIn').focus(); }
+}
+function parseMsg(t) {
+  const m = (t || '').match(/CHAN1:([A-Za-z0-9+/=\s]+)/);
+  if (!m) throw '메시지에서 근무표 코드(CHAN1:로 시작)를 찾지 못했어요';
+  let o; try { o = dec(m[1]); } catch (e) { throw '코드가 잘렸거나 손상됐어요. 메시지 전체를 다시 복사해 주세요'; }
+  if (!o || !o.c || !Array.isArray(o.c.types) || !Array.isArray(o.c.pattern) || !Array.isArray(o.c.teams)) throw '근무표 코드가 아니에요 (백업 코드일 수 있어요)';
+  const meta = o.meta || {};
+  // 메시지 본문에서도 정보 읽기 (사용자가 코드 위 글을 고쳤을 수 있음)
+  const g = k => { const r = t.match(new RegExp('^' + k + '\\s*:\\s*(.+)$', 'm')); return r ? r[1].trim() : ''; };
+  return { name: meta.name || g('회사') || o.c.name || '', region: meta.region || g('사업장') || '', dept: meta.dept || g('부서') || '', note: '', userNote: meta.note || g('메모') || '', at: o.at || '', c: o.c };
+}
+function loadPaste() {
+  const t = $('#pasteIn').value;
+  if (!t.trim()) { pasteErr = '붙여넣은 내용이 없어요'; renderReview(); return; }
+  try { const p = parseMsg(t); startEdit(p); }
+  catch (e) { pasteErr = typeof e === 'string' ? e : '읽을 수 없는 내용이에요'; renderReview(); setTimeout(() => { const i = $('#pasteIn'); if (i) { i.value = t; i.closest('details').open = true; } }, 0); }
+}
+const slug = s => { const base = (s || '').trim().toLowerCase().replace(/\s+/g, '-').replace(/[^0-9a-z가-힣ㄱ-ㅎ-]/g, ''); return base || 'co-' + uid(); };
+function startEdit(p, fromKey) {
+  const c = clone(p.c);
+  c.types.forEach(t => { if (!t.id) t.id = uid(); if (!t.label) t.label = (t.name || '?').slice(0, 1); if (!t.color) t.color = '#6B7280'; });
+  c.teams.forEach(t => { if (!t.id) t.id = uid(); t.offset = t.offset || 0; });
+  if (!c.baseDate) c.baseDate = todayStr();
+  delete c.id; delete c.name; delete c.dirKey; delete c.dirVer;
+  let key = fromKey || slug([p.name, p.region].filter(Boolean).join(' '));
+  const same = DATA.companies.find(x => x.key === key);
+  D = { key, name: p.name, region: p.region || '', dept: p.dept || '', note: p.note || '', userNote: p.userNote || '', at: p.at || '', ver: same ? same.ver || 1 : 1, c, fromKey: fromKey || null, err: {} };
+  const t = new Date(); pv = { team: 0, y: t.getFullYear(), m: t.getMonth() + 1 };
+  view = 'review'; render(); window.scrollTo(0, 0);
+}
+function newBlank() {
+  startEdit({ name: '', region: '', dept: '', c: { baseDate: todayStr(), types: [{ id: 'd1', name: '1직', label: '1', color: '#FFCF1A' }, { id: 'd2', name: '2직', label: '2', color: '#3D7BFF' }, { id: 'd3', name: '3직', label: '3', color: '#2B2F3A' }, { id: 'off', name: '휴무', label: '휴', color: '#E5484D', plain: true }], pattern: [], teams: [{ id: 't1', name: '1조', offset: 0 }, { id: 't2', name: '2조', offset: 0 }, { id: 't3', name: '3조', offset: 0 }, { id: 't4', name: '4조', offset: 0 }] } });
+}
+function cancelEdit() {
+  if (D && D.subId && !D.touched) { D = null; render(); return; }
+  modal('편집을 그만둘까요?', '지금까지 고친 내용은 저장되지 않아요.' + (D && D.subId ? '\n받은 근무표는 목록에 그대로 남아요.' : ''), [{ t: '계속 편집' }, { t: '그만두기', cls: 'red', fn: () => { D = null; render(); } }]);
+}
+
+/* ===== 편집기 ===== */
+let insAt = -1;
+function renderEditor() {
+  const c = D.c, L = c.pattern.length, e = D.err;
+  const ex = DATA.companies.find(x => x.key === D.key);
+  $('#main').innerHTML = `<div class="layout"><div>
+    ${D.subId ? `<div class="card" style="background:#F3F6FF"><div class="ct" style="margin-bottom:6px">받은 근무표 <span class="st ${D.subStatus}">${ST_NAME[D.subStatus] || ''}</span><small>${D.at ? esc(D.at) + ' 받음 (' + ago(D.at) + ')' : ''}</small></div>
+      ${D.userNote ? `<div style="font-size:14px;line-height:1.55;background:#FFF9EC;border-radius:10px;padding:9px 12px">“${esc(D.userNote)}”</div>` : '<div style="font-size:13px;color:var(--sub)">보낸 사람 메모 없음</div>'}
+      <div style="font-size:12.5px;color:var(--sub);margin-top:8px;line-height:1.55">달력에서 조를 바꿔 보며 확인하고, 맞으면 <b>승인 · 등록</b>을 누르세요. 바로 앱에 배포돼요.</div></div>`
+      : D.userNote ? `<div class="card" style="background:#FFF9EC"><div class="ct" style="margin-bottom:6px">보낸 사람 메모 <small>${D.at ? esc(D.at) + ' 보냄' : ''}</small></div><div style="font-size:14px;line-height:1.55">${esc(D.userNote)}</div></div>` : ''}
+    <button class="btn blue pvjump" style="width:100%;margin-bottom:12px" onclick="$('#pvBox').scrollIntoView({behavior:'smooth'})">달력 미리보기로 바로 가기 ↓</button>
+    <div class="card"><div class="ct">등록 정보 ${ex ? `<span class="tag">기존 v${ex.ver || 1} 업데이트</span>` : '<span class="tag new">새 회사</span>'}</div>
+      <div class="f"><label class="lbl">회사 이름 *</label><input class="inp ${e.name ? 'bad' : ''}" value="${esc(D.name)}" placeholder="예: 한빛화학" oninput="D.name=this.value;D.err.name='';this.classList.remove('bad');if(!D.fromKey&&!D.keyTouched){D.key=slug([D.name,D.region].filter(Boolean).join(' '));$('#keyIn').value=D.key}renderBar()">${e.name ? `<div class="ferr">${e.name}</div>` : ''}</div>
+      <div class="grid2 f"><div><label class="lbl">사업장 · 지역</label><input class="inp" value="${esc(D.region)}" placeholder="예: 울산공장" oninput="D.region=this.value;if(!D.fromKey&&!D.keyTouched){D.key=slug([D.name,D.region].filter(Boolean).join(' '));$('#keyIn').value=D.key}renderBar()"></div>
+        <div><label class="lbl">부서 · 직군</label><input class="inp" value="${esc(D.dept)}" placeholder="예: 생산팀" oninput="D.dept=this.value"></div></div>
+      <div class="f"><label class="lbl">앱에 보일 안내 (선택)</label><input class="inp" value="${esc(D.note)}" placeholder="예: 2025년 개편 근무표" oninput="D.note=this.value"></div>
+      <div><label class="lbl">관리용 ID <span style="font-weight:500">— 같은 ID면 기존 근무표를 업데이트해요</span></label><input class="inp" id="keyIn" value="${esc(D.key)}" style="font-family:ui-monospace,Consolas,monospace;font-size:13px" oninput="D.key=this.value.trim();D.keyTouched=1;renderEditorSoft()"></div>
+    </div>
+    <div class="card"><div class="ct">근무 종류 <small>색 · 이름 · 표시 글자 · 쉬는 날</small></div>
+      ${c.types.map((t, i) => `<div class="trow">${chip(t)}<input class="inp" value="${esc(t.name)}" oninput="D.c.types[${i}].name=this.value;renderPreview()">
+        <input class="inp" value="${esc(t.label)}" maxlength="3" style="text-align:center" oninput="D.c.types[${i}].label=this.value;renderEditorSoft()">
+        <input type="color" value="${t.color}" oninput="D.c.types[${i}].color=this.value;renderEditorSoft()">
+        <label class="ck"><input type="checkbox" ${t.plain ? 'checked' : ''} onchange="D.c.types[${i}].plain=this.checked;renderEditorSoft()">쉬는날</label>
+        <button class="btn sm red" title="삭제" onclick="delType(${i})">✕</button></div>`).join('')}
+      <button class="btn sm" onclick="D.c.types.push({id:uid(),name:'근무',label:'근',color:'#6B7280'});renderEditor()">+ 근무 종류 추가</button></div>
+    <div class="card"><div class="ct">근무 순서 <small>${L}일 주기 · 칸을 누르면 삭제 · 칸 사이를 누르면 그 자리에 넣기</small><span class="sp"></span><button class="btn sm ghost" onclick="D.c.pattern=[];insAt=-1;renderEditor()">비우기</button></div>
+      <div class="seq">${L ? c.pattern.map((id, i) => `<span class="ins ${insAt === i ? 'on' : ''}" onclick="insAt=insAt===${i}?-1:${i};renderEditorSoft()" title="여기에 넣기"></span><span class="it" onclick="D.c.pattern.splice(${i},1);if(insAt>${i})insAt--;renderEditor()"><i>${i + 1}</i>${chip(typeOf(c, id))}</span>`).join('') + `<span class="ins ${insAt === -1 ? 'on' : ''}" onclick="insAt=-1;renderEditorSoft()"></span>` : '<span style="color:var(--sub);font-size:13px">아래 버튼으로 근무를 순서대로 넣어주세요</span>'}</div>
+      <div class="adds">${c.types.map(t => `<button class="btn sm ghost" onclick="addSeq('${t.id}')">${chip(t, 's')} ${esc(t.name)}</button>`).join('')}<button class="btn sm ghost" onclick="if(D.c.pattern.length){if(insAt>0){D.c.pattern.splice(insAt-1,1);insAt--}else if(insAt===-1)D.c.pattern.pop();renderEditor()}">⌫ 지우기</button></div>
+      <div style="font-size:12px;color:var(--sub);margin-top:8px">${insAt === -1 ? '지금은 맨 뒤에 추가돼요' : `지금은 ${insAt + 1}번째 앞에 끼워 넣어요`}</div></div>
+    <div class="card"><div class="ct">기준일과 조 <small>기준일에 각 조가 순서 몇 번째 근무인지</small></div>
+      <div class="f"><label class="lbl">기준일</label><input type="date" class="inp" value="${c.baseDate}" onchange="if(this.value){D.c.baseDate=this.value;renderEditor()}"></div>
+      ${c.teams.map((t, i) => { const x = teamShift(c, t, c.baseDate); return `<div class="teamrow"><div class="row"><input class="inp" style="height:38px" value="${esc(t.name)}" oninput="D.c.teams[${i}].name=this.value;renderPreview()"></div>
+        <div class="stepper"><button class="btn sm" onclick="shiftTeam(${i},-1)">−</button><b>${L ? `${mod(t.offset, L) + 1}번째 ${x ? chip(x, 's') : ''}` : '-'}</b><button class="btn sm" onclick="shiftTeam(${i},1)">+</button><button class="btn sm red" onclick="delTeam(${i})">✕</button></div></div>`; }).join('')}
+      <div class="row" style="gap:6px;flex-wrap:wrap"><button class="btn sm" onclick="D.c.teams.push({id:uid(),name:(D.c.teams.length+1)+'조',offset:0});renderEditor()">+ 조 추가</button>
+        ${L && c.teams.length > 1 ? `<button class="btn sm ghost" onclick="spreadTeams()" title="조를 순서에 고르게 나눠 배치">조 간격 자동 맞추기</button>` : ''}</div></div>
+  </div>
+  <div class="sticky" id="pvBox"></div></div>`;
+  renderPreview(); renderBar();
+}
+function renderEditorSoft() { if (D) D.touched = 1; const y = window.scrollY; renderEditor(); window.scrollTo(0, y); }
+function addSeq(id) { if (insAt >= 0) { D.c.pattern.splice(insAt, 0, id); insAt++; } else D.c.pattern.push(id); renderEditorSoft(); }
+function delType(i) {
+  const t = D.c.types[i], used = D.c.pattern.filter(x => x === t.id).length;
+  const go = () => { D.c.types.splice(i, 1); D.c.pattern = D.c.pattern.filter(x => x !== t.id); renderEditorSoft(); };
+  if (D.c.types.length < 2) { toast('근무 종류는 하나 이상 있어야 해요'); return; }
+  if (used) modal(`'${t.name}'을(를) 지울까요?`, `근무 순서에서 ${used}칸이 함께 지워져요.`, [{ t: '취소' }, { t: '지우기', cls: 'red', fn: go }]); else go();
+}
+function delTeam(i) { if (D.c.teams.length < 2) { toast('조는 하나 이상 있어야 해요'); return; } D.c.teams.splice(i, 1); if (pv.team >= D.c.teams.length) pv.team = 0; renderEditorSoft(); }
+function shiftTeam(i, k) { const L = D.c.pattern.length || 1; D.c.teams[i].offset = mod((D.c.teams[i].offset || 0) + k, L); renderEditorSoft(); }
+function spreadTeams() { const L = D.c.pattern.length, n = D.c.teams.length; D.c.teams.forEach((t, i) => t.offset = Math.round(i * L / n) % L); renderEditorSoft(); toast('조를 순서에 고르게 나눴어요. 실제와 맞는지 꼭 확인하세요'); }
+
+/* ===== 검사 ===== */
+function checks() {
+  if (!D) return [];
+  const c = D.c, L = c.pattern.length, out = [];
+  const add = (lv, t) => out.push({ lv, t });
+  if (!D.name.trim()) add('bad', '회사 이름이 비어 있어요');
+  if (!D.key.trim()) add('bad', '관리용 ID가 비어 있어요');
+  if (!L) add('bad', '근무 순서가 비어 있어요');
+  if (c.pattern.some(id => !typeOf(c, id))) add('bad', '근무 순서에 지워진 근무 종류가 있어요');
+  const names = c.teams.map(t => t.name.trim());
+  if (names.some(n => !n)) add('bad', '이름 없는 조가 있어요');
+  if (new Set(names).size !== names.length) add('bad', '조 이름이 겹쳐요');
+  if (L && c.teams.length > 1) {
+    const offs = c.teams.map(t => mod(t.offset, L)), dup = offs.length !== new Set(offs).size;
+    if (dup) add('warn', '근무가 완전히 똑같은 조가 있어요. 조 순서 번호를 확인하세요');
+    // 같은 날 같은 근무 (휴무 제외) 겹침
+    let clash = 0; for (let k = 0; k < L; k++) { const seen = {}; for (const t of c.teams) { const x = typeOf(c, c.pattern[mod(k + t.offset, L)]); if (x && !x.plain) { if (seen[x.id]) clash++; seen[x.id] = 1; } } }
+    if (!dup && clash) add('warn', `주기 안에서 ${clash}번, 같은 날 같은 근무에 두 조가 들어가요. 보통은 조 순서 번호가 틀린 경우예요`);
+  }
+  if (!c.types.some(t => t.plain)) add('info', "쉬는 날로 표시된 근무가 없어요 (휴무를 '쉬는날'로 체크하면 알람 설정이 편해요)");
+  const unused = c.types.filter(t => !c.pattern.includes(t.id) && !t.plain && !/연차|휴가|교육/.test(t.name));
+  if (unused.length) add('info', `순서에 안 쓰인 근무: ${unused.map(t => t.name).join(', ')} (연차·대근용이면 괜찮아요)`);
+  const sameName = DATA.companies.find(x => x.key !== D.key && x.name.trim() === D.name.trim() && (x.region || '') === (D.region || ''));
+  if (sameName) add('warn', `같은 이름의 회사 '${sameName.name}'이(가) 이미 있어요. 업데이트라면 관리용 ID를 '${sameName.key}'로 맞추세요`);
+  if (!out.some(x => x.lv === 'bad' || x.lv === 'warn')) add('ok', '문제가 보이지 않아요. 달력에서 조를 바꿔가며 한 번 더 확인하세요');
+  return out;
+}
+
+/* ===== 미리보기 ===== */
+function renderPreview() {
+  const box = $('#pvBox'); if (!box || !D) return;
+  const c = D.c, L = c.pattern.length, y = pv.y, m = pv.m, ts = todayStr();
+  if (pv.team >= c.teams.length) pv.team = 0;
+  const team = c.teams[pv.team];
+  const first = ds(y, m, 1), st = dn(first) - dow(first), last = dn(ds(y, m, daysIn(y, m))), en = last + (6 - dow(nd(last)));
+  let cal = WD.map((w, i) => `<div class="h ${i === 0 ? 'sun' : i === 6 ? 'sat' : ''}">${w}</div>`).join('');
+  for (let n = st; n <= en; n++) {
+    const s = nd(n), x = L ? teamShift(c, team, s) : null, o = +s.slice(5, 7) !== m, w = dow(s);
+    const k = x ? sc(x) : null;
+    cal += `<div class="d ${o ? 'o' : ''} ${s === ts ? 'td' : ''}"><span class="${w === 0 ? 'sun' : w === 6 ? 'sat' : ''}">${+s.slice(8)}</span>${x ? `<span class="lb" style="background:${k.bg};color:${k.fg}">${esc(x.name)}</span>` : ''}</div>`;
+  }
+  const D2 = daysIn(y, m);
+  let g = `<table class="gt"><tr><th class="n"></th>${Array.from({ length: D2 }, (_, i) => { const s = ds(y, m, i + 1), w = dow(s); return `<th class="${s === ts ? 'tdc' : ''} ${w === 0 ? 'sun' : w === 6 ? 'sat' : ''}">${i + 1}<small>${WD[w]}</small></th>`; }).join('')}</tr>`;
+  c.teams.forEach((t, ti) => { g += `<tr><td class="n" style="${ti === pv.team ? 'color:var(--blue)' : ''}">${esc(t.name)}</td>${Array.from({ length: D2 }, (_, i) => { const s = ds(y, m, i + 1); return `<td class="${s === ts ? 'tdc' : ''}">${L ? chip(teamShift(c, t, s), 's') : ''}</td>`; }).join('')}</tr>`; });
+  g += '</table>';
+  const ck = checks();
+  box.innerHTML = `<div class="card"><div class="ct">미리보기 <small>사용자 앱과 같은 계산</small><span class="sp"></span>
+      <div class="mnav"><button class="btn sm" onclick="movePv(-1)">‹</button><b>${y}년 ${m}월</b><button class="btn sm" onclick="movePv(1)">›</button><button class="btn sm ghost" onclick="const t=new Date();pv.y=t.getFullYear();pv.m=t.getMonth()+1;renderPreview()">오늘</button></div></div>
+    <div class="ttabs">${c.teams.map((t, i) => `<button class="${i === pv.team ? 'on' : ''}" onclick="pv.team=${i};renderPreview()">${esc(t.name)}</button>`).join('')}</div>
+    ${L ? `<div class="cal">${cal}</div>` : '<div class="empty">근무 순서를 넣으면 달력이 보여요</div>'}
+    ${L ? `<div class="ct" style="margin:14px 0 4px;font-size:13px">조별 한눈에 <small>같은 날 같은 근무가 겹치지 않는지 보세요</small></div><div class="gwrap">${g}</div>` : ''}</div>
+    <div class="card"><div class="ct">자동 검사</div><div class="checks">${ck.map(x => `<div class="chk ${x.lv}"><b>${{ ok: '✓', warn: '!', bad: '✕', info: 'i' }[x.lv]}</b><span>${esc(x.t)}</span></div>`).join('')}</div></div>`;
+  renderBar();
+}
+function movePv(k) { pv.m += k; if (pv.m < 1) { pv.m = 12; pv.y--; } if (pv.m > 12) { pv.m = 1; pv.y++; } renderPreview(); }
+
+/* ===== 승인 / 테스트 ===== */
+function buildItem() {
+  const c = clone(D.c); c.teams.forEach(t => t.offset = mod(t.offset || 0, c.pattern.length));
+  const ex = DATA.companies.find(x => x.key === D.key);
+  return { key: D.key.trim(), name: D.name.trim(), region: D.region.trim(), dept: D.dept.trim(), note: D.note.trim(), ver: ex ? (ex.ver || 1) + 1 : 1, added: ex ? ex.added || todayStr() : todayStr(), updated: todayStr(), c };
+}
+let busyApprove = false;
+function approve() {
+  if (!D.name.trim()) { D.err.name = '회사 이름을 입력해 주세요'; renderEditor(); return; }
+  if (checks().some(x => x.lv === 'bad')) { toast('고쳐야 할 문제가 있어요'); return; }
+  const it = buildItem(), i = DATA.companies.findIndex(x => x.key === it.key);
+  const warn = checks().filter(x => x.lv === 'warn');
+  const go = async () => {
+    const subId = D.subId, fromKey = D.fromKey;
+    if (fromKey && fromKey !== it.key) DATA.companies = DATA.companies.filter(x => x.key !== fromKey);
+    const j = DATA.companies.findIndex(x => x.key === it.key);
+    if (j >= 0) DATA.companies[j] = it; else DATA.companies.push(it);
+    DATA.companies.sort((a, b) => a.name.localeCompare(b.name, 'ko'));
+    DIRTY++; persist();
+    busyApprove = true; renderBar();
+    let saved = false;
+    if (GH.token) saved = await saveGH(true);
+    if (subId) await setSub(subId, 'approved', `${it.key} v${it.ver}${saved ? '' : ' (GitHub 저장 전)'}`);
+    busyApprove = false; D = null; view = subId ? 'review' : 'list'; render(); window.scrollTo(0, 0);
+    toast(saved ? `'${it.name}' 등록 완료! 사용자 앱에는 몇 분 안에 나타나요` : `'${it.name}' ${i >= 0 ? '업데이트' : '추가'}했어요. 아래 'GitHub에 저장'을 눌러야 반영돼요`);
+  };
+  const msg = (i >= 0 ? `기존 '${DATA.companies[i].name}'을(를) v${it.ver}로 바꿔요.` : `'${it.name}'을(를) 새로 등록해요.`) + (GH.token ? '\nGitHub에 바로 저장되고, 몇 분 안에 모든 사용자 앱에 나타나요.' : '\n(GitHub 토큰이 없어서 저장은 따로 해야 해요)');
+  if (warn.length) modal('확인할 점이 있어요', warn.map(x => '• ' + x.t).join('\n') + '\n\n그래도 승인할까요?', [{ t: '다시 확인' }, { t: '승인', cls: 'pri', fn: go }]);
+  else modal('승인할까요?', msg, [{ t: '취소' }, { t: '승인 · 등록', cls: 'pri', fn: go }]);
+}
+function copyTest() {
+  const it = buildItem(); const c = clone(it.c); c.name = (it.name || '테스트') + ' (테스트)';
+  copy(enc({ kind: 'company', c })).then(ok => ok ? toast('복사했어요. 듀티로그 설정 → 코드로 가져오기에 붙여넣으세요') : modal('복사하지 못했어요', '아래 코드를 직접 복사하세요.', [{ t: '확인' }]));
+}
+
+/* ===== 등록된 목록 ===== */
+function renderList() {
+  const q = listQ.trim().toLowerCase().replace(/\s/g, '');
+  const hits = DATA.companies.filter(x => !q || [x.name, x.region, x.dept, x.key].join('').toLowerCase().replace(/\s/g, '').includes(q));
+  $('#main').innerHTML = `<div class="card"><div class="row" style="gap:8px;flex-wrap:wrap">
+      <input class="inp" style="flex:1;min-width:200px" placeholder="회사·지역·ID 검색" value="${esc(listQ)}" oninput="listQ=this.value;renderListRows()">
+      <button class="btn ghost" onclick="$('#fileIn').click()">JSON 파일 불러오기</button>
+      <button class="btn ghost" onclick="downloadJSON()">내려받기</button></div></div>
+    <div class="card list" id="listRows"></div>`;
+  renderListRows();
+}
+function renderListRows() {
+  const q = listQ.trim().toLowerCase().replace(/\s/g, '');
+  const hits = DATA.companies.filter(x => !q || [x.name, x.region, x.dept, x.key].join('').toLowerCase().replace(/\s/g, '').includes(q));
+  $('#listRows').innerHTML = hits.length ? hits.map(x => `<div class="it"><span class="ico">${esc([...x.name][0] || '?')}</span><div class="tx"><b>${esc(x.name)}<span class="tag" style="background:var(--soft);color:var(--sub)">v${x.ver || 1}</span></b><small>${[x.region, x.dept, `${x.c.teams.length}개 조`, `${x.c.pattern.length}일 주기`, `ID ${x.key}`].filter(Boolean).map(esc).join(' · ')}</small></div>
+      <button class="btn sm" onclick="editItem('${esc(x.key)}')">편집</button><button class="btn sm red" onclick="delItem('${esc(x.key)}')">삭제</button></div>`).join('')
+    : `<div class="empty">${DATA.companies.length ? '검색 결과가 없어요' : '아직 등록된 회사가 없어요.<br>받은 근무표를 확인하고 승인하면 여기에 쌓여요.'}</div>`;
+}
+function editItem(key) { const x = DATA.companies.find(i => i.key === key); if (!x) return; startEdit({ name: x.name, region: x.region, dept: x.dept, note: x.note, c: x.c }, key); }
+function delItem(key) {
+  const x = DATA.companies.find(i => i.key === key);
+  modal(`'${x.name}'을(를) 삭제할까요?`, '이미 가져간 사용자의 앱에는 그대로 남고, 검색에서만 사라져요.', [{ t: '취소' }, { t: '삭제', cls: 'red', fn: () => { DATA.companies = DATA.companies.filter(i => i.key !== key); DIRTY++; persist(); renderList(); toast('삭제했어요. GitHub에 저장하면 반영돼요'); } }]);
+}
+function exportJSON() { return JSON.stringify({ v: 1, updated: todayStr(), companies: DATA.companies }, null, 1); }
+function downloadJSON() {
+  if (window.AdminApp && AdminApp.shareFile) { AdminApp.shareFile('companies.json', exportJSON()); return; }
+  const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([exportJSON()], { type: 'application/json' })); a.download = 'companies.json'; a.click();
+  setTimeout(() => URL.revokeObjectURL(a.href), 2000);
+}
+function importFile(inp) {
+  const f = inp.files[0]; inp.value = ''; if (!f) return;
+  f.text().then(t => {
+    const j = JSON.parse(t); if (!Array.isArray(j.companies)) throw 0;
+    modal('목록을 바꿀까요?', `파일의 ${j.companies.length}곳으로 지금 목록(${DATA.companies.length}곳)을 바꿔요.`, [{ t: '취소' }, { t: '바꾸기', cls: 'pri', fn: () => { DATA = { v: 1, updated: j.updated || '', companies: j.companies }; DIRTY++; persist(); render(); toast('불러왔어요'); } }]);
+  }).catch(() => toast('companies.json 형식이 아니에요'));
+}
+
+/* ===== GitHub ===== */
+const b64e = s => btoa(unescape(encodeURIComponent(s)));
+const b64d = s => decodeURIComponent(escape(atob(s.replace(/\n/g, ''))));
+const ghUrl = () => `https://api.github.com/repos/${encodeURIComponent(GH.owner)}/${encodeURIComponent(GH.repo)}/contents/${GH.path.split('/').map(encodeURIComponent).join('/')}`;
+const ghHead = () => Object.assign({ Accept: 'application/vnd.github+json' }, GH.token ? { Authorization: 'Bearer ' + GH.token } : {});
+async function ghLoad(silent) {
+  if (!GH.owner || !GH.repo) { ghState = 'none'; updHeader(); return; }
+  ghState = 'busy'; updHeader();
+  try {
+    const r = await fetch(ghUrl() + '?ref=' + encodeURIComponent(GH.branch) + '&t=' + Date.now(), { headers: ghHead(), cache: 'no-store' });
+    if (r.status === 404) { ghState = GH.token ? 'ok' : 'none'; SHA = null; updHeader(); if (!silent) toast(GH.token ? '저장소에 아직 파일이 없어요. 처음 저장할 때 만들어져요' : '저장소나 파일을 찾을 수 없어요'); return 'nofile'; }
+    if (!r.ok) throw r.status;
+    const j = await r.json(), remote = JSON.parse(b64d(j.content));
+    ghState = 'ok';
+    if (DIRTY && SHA && j.sha !== SHA) { updHeader(); modal('GitHub 목록이 바뀌었어요', '다른 곳에서 저장된 새 목록이 있어요. 지금 내 변경을 버리고 GitHub 목록을 불러올까요?', [{ t: '내 변경 유지' }, { t: 'GitHub 목록 불러오기', cls: 'pri', fn: () => { DATA = remote; SHA = j.sha; DIRTY = 0; persist(); render(); } }]); return; }
+    if (!DIRTY) { DATA = remote; }
+    SHA = j.sha; persist(); render(); if (!silent) toast(`GitHub에서 ${remote.companies.length}곳을 불러왔어요`);
+    return 'ok';
+  } catch (e) { ghState = GH.token ? 'err' : 'none'; updHeader(); if (!silent) toast(e === 401 || e === 403 ? '토큰 권한을 확인해 주세요' : 'GitHub에 연결하지 못했어요'); return 'err'; }
+}
+async function saveGH(quiet) {
+  if (!GH.token) { if (quiet) return false; modal('GitHub 토큰이 필요해요', "'설정' 탭에서 저장소와 토큰을 먼저 넣어주세요. 토큰 없이도 '파일로 내려받기'로 받은 파일을 GitHub에 직접 올릴 수 있어요.", [{ t: '닫기' }, { t: '연결하러 가기', cls: 'pri', fn: () => tab('set') }]); return; }
+  const btn = document.querySelector('#actbar .btn.blue'); if (btn) { btn.disabled = true; btn.textContent = '저장 중…'; }
+  try {
+    const body = { message: `근무표 목록 업데이트 (${DATA.companies.length}곳)`, content: b64e(exportJSON()), branch: GH.branch };
+    if (SHA) body.sha = SHA;
+    let r = await fetch(ghUrl(), { method: 'PUT', headers: Object.assign({ 'Content-Type': 'application/json' }, ghHead()), body: JSON.stringify(body) });
+    if (r.status === 409 || r.status === 422) {
+      // 버전이 다르면 최신 sha를 받아서 한 번 더
+      const g = await fetch(ghUrl() + '?ref=' + encodeURIComponent(GH.branch) + '&t=' + Date.now(), { headers: ghHead(), cache: 'no-store' });
+      if (g.ok) { const j = await g.json(); modal('GitHub에 더 새로운 목록이 있어요', '다른 곳(PC·폰)에서 먼저 저장했어요. 내 목록으로 덮어쓸까요?\n덮어쓰기 전에 등록된 목록을 확인하세요.', [{ t: '취소' }, { t: '덮어쓰기', cls: 'red', fn: () => { SHA = j.sha; persist(); saveGH(); } }]); renderBar(); return false; }
+    }
+    if (!r.ok) throw r.status;
+    const j = await r.json(); SHA = j.content.sha; DIRTY = 0; DATA.updated = todayStr(); ghState = 'ok'; persist();
+    if (!quiet) { render(); toast('저장했어요. 사용자 앱에는 몇 분 안에 반영돼요'); }
+    return true;
+  } catch (e) { ghState = 'err'; updHeader(); toast(e === 401 || e === 403 ? '토큰 권한이 없어요. Contents: Read and write 권한을 확인하세요' : e === 404 ? '저장소를 찾을 수 없어요. 이름을 확인하세요' : 'GitHub에 저장하지 못했어요. 잠시 후 다시 시도하세요'); return false; }
+}
+let srvTest = null, cfgState = null;   // 연결 확인 결과
+function renderSettings() {
+  const inApp = !!window.AdminApp;
+  $('#main').innerHTML = `<div class="layout"><div>
+    <div class="card"><div class="ct">① 근무표 접수 서버 <small>앱에서 보낸 근무표가 들어오는 곳</small></div>
+      <div class="f"><label class="lbl">서버 주소 (웹 앱 URL)</label><input class="inp" id="sU" value="${esc(SRV.url)}" placeholder="https://script.google.com/macros/s/.../exec" style="font-size:13px" autocomplete="off"></div>
+      <div class="f"><label class="lbl">관리자 키 (서버 코드 맨 위 ADMIN_KEY)</label><div class="row" style="gap:6px"><input class="inp" id="sK" type="password" value="${esc(SRV.key)}" autocomplete="off"><button class="btn ghost" onclick="const i=$('#sK');i.type=i.type==='password'?'text':'password'">보기</button></div></div>
+      <div class="row" style="gap:8px;flex-wrap:wrap"><button class="btn pri" onclick="saveSrv()">저장하고 연결 확인</button></div>
+      ${srvTest ? `<div class="okline ${srvTest[0]}">${esc(srvTest[1])}</div>` : ''}</div>
+    <div class="card"><div class="ct">② 교대링 앱에 서버 알려주기 <small>처음 한 번 (주소가 바뀌면 다시)</small></div>
+      <div style="font-size:13.5px;color:var(--sub);line-height:1.6">앱은 GitHub의 <code>config.json</code>에서 서버 주소를 읽어요. 그래서 주소가 바뀌어도 앱 업데이트 없이 따라가요.</div>
+      <div class="row" style="gap:8px;margin-top:10px;flex-wrap:wrap"><button class="btn blue" onclick="pushConfig()" ${SRV.url && GH.token ? '' : 'disabled'}>앱에 서버 주소 저장</button><button class="btn ghost" onclick="checkConfig()">앱이 쓰는 주소 확인</button></div>
+      ${!GH.token ? '<div class="okline info">아래 ③에 GitHub 토큰을 먼저 넣어 주세요</div>' : ''}${cfgState ? `<div class="okline ${cfgState[0]}">${esc(cfgState[1])}</div>` : ''}</div>
+    <div class="card"><div class="ct">③ GitHub (근무표 목록 저장소)</div>
+      <div class="grid2 f"><div><label class="lbl">GitHub 사용자명</label><input class="inp" id="gO" value="${esc(GH.owner)}"></div><div><label class="lbl">저장소 이름</label><input class="inp" id="gR" value="${esc(GH.repo)}"></div></div>
+      <div class="grid2 f"><div><label class="lbl">브랜치</label><input class="inp" id="gB" value="${esc(GH.branch)}"></div><div><label class="lbl">파일 경로</label><input class="inp" id="gP" value="${esc(GH.path)}"></div></div>
+      <div class="f"><label class="lbl">토큰 (이 기기에만 저장돼요)</label><div class="row" style="gap:6px"><input class="inp" id="gT" type="password" value="${esc(GH.token)}" placeholder="github_pat_..." autocomplete="off"><button class="btn ghost" onclick="const i=$('#gT');i.type=i.type==='password'?'text':'password'">보기</button></div></div>
+      <div class="row" style="gap:8px;flex-wrap:wrap"><button class="btn pri" onclick="saveGHSet()">저장하고 연결 확인</button><button class="btn ghost" onclick="ghLoad()">목록 다시 불러오기</button>${GH.token ? `<button class="btn red" onclick="GH.token='';LSset('gyAdminGH',GH);renderSettings();updHeader()">토큰 지우기</button>` : ''}</div></div>
+    ${inApp ? `<div class="card"><div class="ct">④ 알림</div><div style="font-size:13.5px;color:var(--sub);line-height:1.6">새 근무표가 들어오면 폰 알림으로 알려줘요. (15~30분마다 확인)</div>
+      <label class="ck" style="font-size:14px;color:var(--ink);margin-top:10px;gap:8px"><input type="checkbox" ${LS('gyAdminNotify') !== false ? 'checked' : ''} onchange="LSset('gyAdminNotify',this.checked);syncApp()"> 새 근무표 알림 받기</label></div>` : ''}
+  </div>
+  <div><div class="card"><div class="ct">접수 서버 처음 만들기 <small>PC에서 하면 편해요 · 10분</small></div>
+    <ol class="steps">
+      <li><b>구글 시트 만들기</b> — <code>sheets.new</code> 에서 빈 시트를 만들고 이름을 <b>교대링 근무표 접수</b>로 바꿔요</li>
+      <li>메뉴 <b>확장 프로그램 → Apps Script</b> → 원래 있던 코드를 지우고 <b>Code.gs</b> 내용을 통째로 붙여넣고 저장(💾)</li>
+      <li>위쪽 함수 목록에서 <b>setup</b> 선택 → <b>실행</b> → 권한 검토 → 내 계정 선택. "확인되지 않은 앱" 경고가 나오면 <b>고급 → (안전하지 않음)으로 이동</b> → 허용 (내가 만든 코드라 괜찮아요)</li>
+      <li><b>배포 → 새 배포</b> → 톱니바퀴에서 <b>웹 앱</b> → 다음 사용자 인증 정보로 실행: <b>나</b>, 액세스 권한: <b>모든 사용자</b> → 배포</li>
+      <li>나온 <b>웹 앱 URL</b>(…/exec로 끝남)을 ①에 붙여넣고, 코드 맨 위 <code>ADMIN_KEY</code> 따옴표 안 값을 관리자 키에 넣어 저장</li>
+      <li>②의 <b>앱에 서버 주소 저장</b>을 누르면 끝! 이제 교대링 앱의 '보내기'가 여기로 바로 들어와요</li></ol>
+    <div class="help">코드를 고친 뒤에는 <b>배포 → 배포 관리 → 연필(수정) → 버전: 새 버전 → 배포</b>를 해야 반영돼요. 이렇게 하면 주소는 그대로예요.<br>받은 근무표는 구글 시트에도 그대로 쌓여서, 시트에서 직접 볼 수도 있어요.</div></div>
+    <div class="card"><div class="ct">GitHub 토큰 만들기 <small>처음 한 번</small></div>
+      <ol class="steps"><li>GitHub → Settings → Developer settings → <b>Fine-grained tokens</b> → Generate new token</li>
+      <li>Repository access: <b>Only select repositories</b> → <code>${esc(GH.repo)}</code></li>
+      <li>Permissions → <b>Contents: Read and write</b> → 만들기 → 토큰을 ③에 붙여넣기</li></ol>
+      <div style="font-size:12.5px;color:var(--sub)">토큰과 관리자 키는 이 기기에만 저장돼요. 남의 기기에서 썼다면 지워 주세요.</div></div></div></div>`;
+}
+async function saveSrv() {
+  SRV = { url: $('#sU').value.trim(), key: $('#sK').value.trim() }; LSset('gyAdminSrv', SRV); syncApp();
+  if (!/^https:\/\/script\.google(usercontent)?\.com\//.test(SRV.url)) { srvTest = ['bad', '주소가 이상해요. https://script.google.com/macros/s/…/exec 형태여야 해요']; renderSettings(); return; }
+  if (!SRV.key) { srvTest = ['bad', '관리자 키를 넣어 주세요']; renderSettings(); return; }
+  srvTest = ['info', '확인 중…']; renderSettings();
+  try {
+    const p = await fetch(SRV.url + (SRV.url.includes('?') ? '&' : '?') + 'action=ping&t=' + Date.now()).then(r => r.json());
+    if (!p.ok) throw 'ping';
+    try { const j = await api('count'); srvTest = ['ok', `연결됐어요! 확인을 기다리는 근무표 ${j.new}건`]; srvState = 'ok'; loadInbox(true); }
+    catch (e) { srvTest = ['bad', e === 'auth' ? '서버는 찾았는데 관리자 키가 달라요' : '서버 응답이 이상해요']; srvState = e === 'auth' ? 'auth' : 'err'; }
+  } catch (e) { srvTest = ['bad', '서버에 연결하지 못했어요. 배포할 때 액세스 권한을 "모든 사용자"로 했는지 확인하세요']; srvState = 'err'; }
+  updHeader(); if (view === 'set') renderSettings();
+}
+const cfgUrl = () => `https://api.github.com/repos/${encodeURIComponent(GH.owner)}/${encodeURIComponent(GH.repo)}/contents/config.json`;
+async function checkConfig() {
+  cfgState = ['info', '확인 중…']; renderSettings();
+  try {
+    const r = await fetch(cfgUrl() + '?ref=' + encodeURIComponent(GH.branch) + '&t=' + Date.now(), { headers: ghHead(), cache: 'no-store' });
+    if (r.status === 404) cfgState = ['bad', '아직 앱에 알려준 서버가 없어요. "앱에 서버 주소 저장"을 누르세요'];
+    else if (!r.ok) throw r.status;
+    else { const j = JSON.parse(b64d((await r.json()).content)); const same = j.submitUrl === SRV.url; cfgState = [same ? 'ok' : 'bad', same ? '앱이 지금 이 서버를 쓰고 있어요 ✓' : `앱은 다른 주소를 쓰고 있어요: ${j.submitUrl || '(없음)'}`]; }
+  } catch (e) { cfgState = ['bad', '확인하지 못했어요']; }
+  renderSettings();
+}
+async function pushConfig() {
+  cfgState = ['info', '저장 중…']; renderSettings();
+  try {
+    let sha = null;
+    const g = await fetch(cfgUrl() + '?ref=' + encodeURIComponent(GH.branch) + '&t=' + Date.now(), { headers: ghHead(), cache: 'no-store' });
+    if (g.ok) sha = (await g.json()).sha;
+    const body = { message: '앱 접수 서버 주소 설정', content: b64e(JSON.stringify({ v: 1, submitUrl: SRV.url }, null, 1)), branch: GH.branch };
+    if (sha) body.sha = sha;
+    const r = await fetch(cfgUrl(), { method: 'PUT', headers: Object.assign({ 'Content-Type': 'application/json' }, ghHead()), body: JSON.stringify(body) });
+    if (!r.ok) throw r.status;
+    cfgState = ['ok', '저장했어요. 몇 분 안에 모든 교대링 앱이 이 서버로 보내요'];
+  } catch (e) { cfgState = ['bad', e === 401 || e === 403 ? 'GitHub 토큰 권한을 확인하세요' : '저장하지 못했어요']; }
+  renderSettings();
+}
+function saveGHSet() {
+  GH = { owner: $('#gO').value.trim(), repo: $('#gR').value.trim(), branch: $('#gB').value.trim() || 'main', path: $('#gP').value.trim() || 'companies.json', token: $('#gT').value.trim() };
+  LSset('gyAdminGH', GH); ghLoad(); renderSettings();
+}
+function syncApp() {
+  if (window.AdminApp && AdminApp.setServer) try { AdminApp.setServer(SRV.url || '', SRV.key || '', LS('gyAdminNotify') !== false); } catch (e) { }
+}
+
+/* ===== 시작 ===== */
+window.addEventListener('beforeunload', e => { if (DIRTY || (D && D.touched)) { e.preventDefault(); e.returnValue = ''; } });
+/* 뒤로가기 (안드로이드 관리자 앱) */
+window.onBack = () => {
+  if ($('#modal').classList.contains('on')) { closeModal(); return true; }
+  if (D) { cancelEdit(); return true; }
+  if (view !== 'review') { tab('review'); return true; }
+  return false;
+};
+render();
+if (GH.owner && GH.repo) ghLoad(true);
+syncApp();
+loadInbox(true);
+// 보고 있으면 1분마다, 다시 돌아오면 바로 새로고침
+setInterval(() => { if (!document.hidden && view === 'review' && !D) loadInbox(true); }, 60000);
+document.addEventListener('visibilitychange', () => { if (!document.hidden && Date.now() - (INBOX.at || 0) > 20000) loadInbox(true); });
+window.onAppResume = () => { if (Date.now() - (INBOX.at || 0) > 5000) loadInbox(true); };
+
+</script>
+</body>
+</html>
