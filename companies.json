@@ -3,6 +3,78 @@
  "updated": "2026-11-22",
  "companies": [
   {
+   "key": "삼성전자-평택",
+   "name": "삼성전자",
+   "region": "평택",
+   "dept": "생산",
+   "note": "",
+   "ver": 1,
+   "added": "2026-11-22",
+   "updated": "2026-11-22",
+   "c": {
+    "baseDate": "2026-11-22",
+    "types": [
+     {
+      "id": "dd",
+      "name": "주간",
+      "label": "주",
+      "color": "#FFB020"
+     },
+     {
+      "id": "nn",
+      "name": "야간",
+      "label": "야",
+      "color": "#2B2F3A"
+     },
+     {
+      "id": "off",
+      "name": "휴무",
+      "label": "휴",
+      "color": "#E5484D",
+      "plain": true
+     },
+     {
+      "id": "vac",
+      "name": "연차",
+      "label": "연",
+      "color": "#FF8A3D"
+     }
+    ],
+    "pattern": [
+     "dd",
+     "dd",
+     "nn",
+     "nn",
+     "off",
+     "off",
+     "off",
+     "off"
+    ],
+    "teams": [
+     {
+      "id": "a",
+      "name": "A조",
+      "offset": 0
+     },
+     {
+      "id": "b",
+      "name": "B조",
+      "offset": 2
+     },
+     {
+      "id": "c",
+      "name": "C조",
+      "offset": 4
+     },
+     {
+      "id": "d",
+      "name": "D조",
+      "offset": 6
+     }
+    ]
+   }
+  },
+  {
    "key": "휴비스-울산",
    "name": "휴비스",
    "region": "울산",
