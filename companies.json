@@ -1,7 +1,114 @@
 {
  "v": 1,
- "updated": "2026-11-19",
+ "updated": "2026-11-22",
  "companies": [
+  {
+   "key": "테스트2-테스트",
+   "name": "테스트2",
+   "region": "테스트",
+   "dept": "테스트",
+   "note": "",
+   "ver": 1,
+   "added": "2026-11-22",
+   "updated": "2026-11-22",
+   "c": {
+    "types": [
+     {
+      "id": "d1",
+      "name": "1직",
+      "label": "1",
+      "color": "#FFCF1A",
+      "text": "#222222"
+     },
+     {
+      "id": "d2",
+      "name": "2직",
+      "label": "2",
+      "color": "#3D7BFF",
+      "text": "#FFFFFF"
+     },
+     {
+      "id": "d3",
+      "name": "3직",
+      "label": "3",
+      "color": "#2B3340",
+      "text": "#FFFFFF"
+     },
+     {
+      "id": "off",
+      "name": "휴무",
+      "label": "휴",
+      "color": "#F04452",
+      "text": "#F04452",
+      "plain": true
+     },
+     {
+      "id": "vac",
+      "name": "연차",
+      "label": "연",
+      "color": "#FF8A3D",
+      "text": "#FFFFFF"
+     },
+     {
+      "id": "2u5laax",
+      "name": "1,2직",
+      "label": "1,2",
+      "color": "#7A5AE0",
+      "combo": null,
+      "text": "#FFFFFF"
+     },
+     {
+      "id": "c1c2ht4",
+      "name": "2,3직",
+      "label": "2,3",
+      "color": "#EC4899",
+      "combo": null,
+      "text": "#FFFFFF"
+     }
+    ],
+    "baseDate": "2027-01-04",
+    "pattern": [
+     "d2",
+     "d2",
+     "d2",
+     "d2",
+     "off",
+     "d1",
+     "d1",
+     "d1",
+     "d1",
+     "off",
+     "off",
+     "d3",
+     "d3",
+     "d3",
+     "d3",
+     "off"
+    ],
+    "teams": [
+     {
+      "id": "t1",
+      "name": "1조",
+      "offset": 4
+     },
+     {
+      "id": "t2",
+      "name": "2조",
+      "offset": 8
+     },
+     {
+      "id": "t3",
+      "name": "3조",
+      "offset": 12
+     },
+     {
+      "id": "t4",
+      "name": "4조",
+      "offset": 0
+     }
+    ]
+   }
+  },
   {
    "key": "테스트회사-전주",
    "name": "테스트회사",
