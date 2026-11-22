@@ -4,6 +4,10 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>교대링 근무표 관리</title>
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#1C2340">
+<link rel="icon" type="image/png" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
 <style>
 :root{--bg:#F3F4F7;--card:#fff;--ink:#1C2233;--sub:#6B7180;--line:#E6E8EE;--soft:#F1F2F6;--acc:#1C2340;--blue:#3D6BF5;--ok:#1F9D63;--warn:#D98A00;--bad:#E0484D}
 *{box-sizing:border-box}
@@ -151,6 +155,53 @@ details.fold>div{padding-bottom:16px}
 .steps li::before{content:counter(s);position:absolute;left:0;top:0;width:24px;height:24px;border-radius:12px;background:var(--acc);color:#fff;font-size:12px;font-weight:800;display:flex;align-items:center;justify-content:center}
 .rj{display:flex;flex-direction:column;gap:6px;margin-bottom:10px}
 .rj label{display:flex;align-items:center;gap:8px;font-size:14px;padding:9px 11px;border-radius:10px;background:var(--soft);cursor:pointer}
+/* 요약 숫자 */
+.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-bottom:12px}
+.stt{background:var(--card);border-radius:16px;padding:13px 15px;box-shadow:0 1px 2px rgba(20,30,60,.05);cursor:pointer;min-width:0}
+.stt span{display:block;font-size:12.5px;font-weight:700;color:var(--sub)}
+.stt b{display:block;font-size:26px;font-weight:800;letter-spacing:-1px;margin-top:2px}
+.stt b small{font-size:13px;font-weight:700;color:var(--sub);margin-left:2px;letter-spacing:0}
+.stt em{display:block;font-style:normal;font-size:11.5px;color:var(--sub);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.stt.hot{background:var(--acc);color:#fff}.stt.hot span,.stt.hot em,.stt.hot b small{color:rgba(255,255,255,.72)}
+/* 카드 */
+.sub .t0{font-size:11.5px;font-weight:700;color:var(--sub);font-family:ui-monospace,Consolas,monospace;margin-bottom:2px}
+.sub .rg{font-size:12px;font-weight:800;padding:2px 8px;border-radius:6px;background:#E7EEFF;color:#2348B8}
+.sub .t3{font-size:12.5px;color:var(--ink);margin-top:4px;font-variant-numeric:tabular-nums}
+.sub .t3 .lb{display:inline-block;min-width:34px;font-weight:700;color:var(--sub);margin-right:4px}
+.sub .t3 i{font-style:normal;color:var(--sub);margin-left:4px}
+/* 표 (PC) */
+.tbl{padding:0;overflow:auto}
+table.dt{width:100%;border-collapse:collapse;font-size:13px;font-variant-numeric:tabular-nums}
+.dt th{position:sticky;top:0;background:#F7F8FA;text-align:left;font-size:12px;font-weight:700;color:var(--sub);padding:11px 12px;border-bottom:1px solid var(--line);white-space:nowrap}
+.dt td{padding:11px 12px;border-bottom:1px solid var(--line);vertical-align:top;line-height:1.45}
+.dt tbody tr{cursor:pointer;transition:background .1s}
+.dt tbody tr:hover{background:#F5F7FF}
+.dt tr.nw td:first-child{box-shadow:inset 3px 0 0 var(--blue)}
+.dt .mono{font-family:ui-monospace,Consolas,monospace;font-size:12.5px;white-space:nowrap}
+.dt .co{font-size:14px}
+.dt .nt{font-size:12px;color:#7A6330;margin-top:3px;max-width:260px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.dt .wd{color:var(--sub);font-size:12px}
+.dt .tm{color:var(--sub);font-size:12.5px}
+/* 처리 기록 */
+.tl{position:relative;margin:6px 0 0 4px}
+.tli{display:flex;gap:12px;position:relative;padding-bottom:12px}
+.tli:not(:last-child)::before{content:'';position:absolute;left:5px;top:14px;bottom:-2px;width:2px;background:var(--line)}
+.tld{width:12px;height:12px;border-radius:6px;flex:none;margin-top:4px;box-shadow:0 0 0 3px #fff}
+.tlb{flex:1;min-width:0}
+.tlh{display:flex;align-items:center;gap:6px;flex-wrap:wrap;font-size:14px}
+.tlby{font-size:12px;color:var(--sub);background:var(--soft);border-radius:6px;padding:1px 7px}
+.tlp{font-size:11.5px;color:var(--sub);margin-left:auto;font-variant-numeric:tabular-nums}
+.tlt{font-size:13px;color:var(--ink);margin-top:2px;font-variant-numeric:tabular-nums}
+.tlm{font-size:12.5px;color:var(--sub);margin-top:2px}
+.tlsum{font-size:13px;background:var(--soft);border-radius:10px;padding:8px 11px;margin-top:2px}
+@media (max-width:700px){.stats{grid-template-columns:repeat(2,minmax(0,1fr))}.stt b{font-size:22px}}
+.okline.blk{display:block}
+@media (max-width:700px){
+  .banner .seg{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;margin:0 -4px;padding:0 4px;min-width:100%}
+  .banner .seg::-webkit-scrollbar{display:none}
+  .banner .seg button{flex:none}
+  .banner .sv{flex:1}
+}
 @media (max-width:900px){.layout{grid-template-columns:minmax(0,1fr)}.sticky{position:static}.pvjump{display:inline-flex}}
 @media (max-width:520px){.sub{padding:12px}.sub .av{width:38px;height:38px;font-size:16px}#srvPill,#ghPill{display:none}.wrap{padding:12px 12px 140px}.grid2{grid-template-columns:1fr}.trow{grid-template-columns:24px 1fr 52px 34px auto 32px}.cal .d{height:50px}.hsp{display:none}}
 </style>
@@ -276,25 +327,74 @@ function renderBar() {
 /* ===== 받은 근무표: 자동 수신함 ===== */
 let pasteErr = '';
 const ST_NAME = { new: '새로 받음', hold: '보류', approved: '승인됨', rejected: '거절됨' };
-function ago(t) {
-  if (!t) return '';
-  const d = new Date(String(t).replace(' ', 'T') + '+09:00'), m = Math.round((Date.now() - d) / 60000);
-  if (isNaN(m)) return String(t);
-  if (m < 1) return '방금'; if (m < 60) return m + '분 전'; if (m < 1440) return Math.floor(m / 60) + '시간 전';
-  if (m < 10080) return Math.floor(m / 1440) + '일 전'; return String(t).slice(0, 10);
+const EV = {
+  received: ['접수', '#3D6BF5'], viewed: ['검토 시작', '#8A90A0'], hold: ['보류', '#D98A00'], rejected: ['거절', '#E0484D'],
+  approved: ['승인', '#1F9D63'], deployed: ['배포 완료', '#1C2340'], new: ['다시 대기로', '#3D6BF5'], note: ['메모', '#8A90A0']
+};
+/* 날짜·시간 (서버는 한국 시간 'YYYY-MM-DD HH:mm:ss'로 기록) */
+const kdt = t => { const m = String(t || '').match(/^(\d{4})-(\d\d)-(\d\d)[ T](\d\d):(\d\d)(?::(\d\d))?/); return m ? { y: +m[1], mo: +m[2], d: +m[3], h: +m[4], mi: +m[5], s: +(m[6] || 0), ms: Date.UTC(+m[1], +m[2] - 1, +m[3], +m[4] - 9, +m[5], +(m[6] || 0)) } : null; };
+const wdOf = k => WD[new Date(Date.UTC(k.y, k.mo - 1, k.d)).getUTCDay()];
+const ampm = (h, mi, s) => `${h < 12 ? '오전' : '오후'} ${h % 12 || 12}:${pad(mi)}${s == null ? '' : ':' + pad(s)}`;
+function fullDT(t) { const k = kdt(t); return k ? `${k.y}년 ${k.mo}월 ${k.d}일 (${wdOf(k)}) ${ampm(k.h, k.mi, k.s)}` : esc(t || ''); }
+function shortDT(t) { const k = kdt(t); return k ? `${k.y}.${pad(k.mo)}.${pad(k.d)} (${wdOf(k)}) ${pad(k.h)}:${pad(k.mi)}:${pad(k.s)}` : (t || ''); }
+function tableDT(t) { const k = kdt(t); return k ? `<b>${k.y}.${pad(k.mo)}.${pad(k.d)}</b> <span class="wd">${wdOf(k)}</span><br><span class="tm">${pad(k.h)}:${pad(k.mi)}:${pad(k.s)}</span>` : '<span class="tm">—</span>'; }
+function dur(ms) {
+  if (ms < 0) ms = 0;
+  const m = Math.floor(ms / 60000);
+  if (m < 1) return Math.max(1, Math.round(ms / 1000)) + '초';
+  if (m < 60) return m + '분';
+  const h = Math.floor(m / 60); if (h < 24) return h + '시간' + (m % 60 ? ' ' + (m % 60) + '분' : '');
+  const d = Math.floor(h / 24); return d + '일' + (h % 24 ? ' ' + (h % 24) + '시간' : '');
 }
-const timeStr = ms => { const d = new Date(ms); return `${pad(d.getHours())}:${pad(d.getMinutes())}`; };
+function ago(t) { const k = kdt(t); if (!k) return String(t || ''); const ms = Date.now() - k.ms; return ms < 60000 ? '방금' : dur(ms) + ' 전'; }
+const timeStr = ms => { const d = new Date(ms); return `${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`; };
+const noOf = x => x.no || ('#' + String(x.id).slice(-6));
+const lastEv = (x, e) => { const l = (x.log || []).filter(v => v.e === e); return l[l.length - 1]; };
+
+/* 처리 기록 (타임라인) */
+function timeline(x) {
+  const log = (x.log && x.log.length) ? x.log : [{ t: x.at, e: 'received', by: '교대링 앱' }];
+  const t0 = kdt(log[0].t);
+  const done = x.status === 'approved' ? lastEv(x, 'approved') : x.status === 'rejected' ? lastEv(x, 'rejected') : null;
+  const sum = done && t0 && kdt(done.t) ? `<div class="tlsum">접수 후 <b>${dur(kdt(done.t).ms - t0.ms)}</b> 만에 ${x.status === 'approved' ? '승인' : '거절'}했어요</div>`
+    : x.status === 'new' && t0 ? `<div class="tlsum">접수 후 <b>${dur(Date.now() - t0.ms)}</b> 동안 확인을 기다리고 있어요</div>` : '';
+  return `<div class="tl">${log.map((v, i) => {
+    const e = EV[v.e] || [v.e, '#8A90A0'], k = kdt(v.t);
+    const since = i && t0 && k ? `<span class="tlp">+${dur(k.ms - t0.ms)}</span>` : '';
+    return `<div class="tli"><span class="tld" style="background:${e[1]}"></span><div class="tlb"><div class="tlh"><b>${esc(e[0])}</b>${v.by ? `<span class="tlby">${esc(v.by)}</span>` : ''}${since}</div>
+      <div class="tlt">${fullDT(v.t)}</div>${v.m ? `<div class="tlm">${esc(v.m)}</div>` : ''}</div></div>`;
+  }).join('')}</div>${sum}`;
+}
+
+/* 요약 숫자 */
+function stats() {
+  const it = INBOX.items, c = INBOX.counts || {};
+  const today = todayStr(), wk = dn(today) - 6;
+  const dayN = t => { const k = kdt(t); return k ? dn(ds(k.y, k.mo, k.d)) : -1; };
+  const todayIn = it.filter(x => dayN(x.at) === dn(today)).length;
+  const weekOk = it.filter(x => { const a = lastEv(x, 'approved'); return x.status === 'approved' && a && dayN(a.t) >= wk; }).length;
+  const oldest = it.filter(x => x.status === 'new').map(x => kdt(x.at)).filter(Boolean).sort((a, b) => a.ms - b.ms)[0];
+  return `<div class="stats">
+    <div class="stt ${c.new ? 'hot' : ''}" onclick="inFilter='new';renderReview()"><span>확인 대기</span><b>${c.new || 0}<small>건</small></b><em>${oldest ? '가장 오래된 것 ' + dur(Date.now() - oldest.ms) + ' 전' : '모두 처리했어요'}</em></div>
+    <div class="stt" onclick="inFilter='hold';renderReview()"><span>보류</span><b>${c.hold || 0}<small>건</small></b><em>나중에 다시 볼 것</em></div>
+    <div class="stt"><span>오늘 접수</span><b>${todayIn}<small>건</small></b><em>${today.replace(/-/g, '.')} (${WD[dow(today)]})</em></div>
+    <div class="stt" onclick="inFilter='approved';renderReview()"><span>최근 7일 승인</span><b>${weekOk}<small>건</small></b><em>전체 승인 ${c.approved || 0}건</em></div></div>`;
+}
+
+const wide = () => window.innerWidth >= 1000;
 function renderReview() {
   if (D) { renderEditor(); return; }
   const cnt = INBOX.counts || {}, items = INBOX.items.filter(x => inFilter === 'all' || x.status === inFilter);
   const noSrv = !SRV.url || !SRV.key;
   $('#main').innerHTML = `
     ${noSrv ? `<div class="card" style="background:#EEF3FF"><div class="ct">접수 서버를 연결해 주세요</div><div style="font-size:14px;line-height:1.6;color:var(--sub)">앱에서 보낸 근무표가 여기에 자동으로 쌓이게 하려면 처음 한 번 서버를 연결해야 해요.</div><button class="btn pri" style="margin-top:12px" onclick="tab('set')">설정으로 가기</button></div>` : `
+    ${stats()}
     <div class="card"><div class="banner"><div class="seg grow">${['new', 'hold', 'approved', 'rejected', 'all'].map(k => `<button class="${inFilter === k ? 'on' : ''}" onclick="inFilter='${k}';renderReview()">${k === 'all' ? '전체' : ST_NAME[k]}${k !== 'all' && cnt[k] ? ` <span class="n">${cnt[k]}</span>` : ''}</button>`).join('')}</div>
-      <span class="sv">${srvState === 'busy' ? '<span class="spin"></span> 불러오는 중' : INBOX.at ? '업데이트 ' + timeStr(INBOX.at) : ''}</span>
-      <button class="btn sm" onclick="loadInbox()">새로고침</button></div>
+      <span class="sv">${srvState === 'busy' ? '<span class="spin"></span> 불러오는 중' : INBOX.at ? '마지막 확인 ' + timeStr(INBOX.at) : ''}</span>
+      <button class="btn sm" onclick="loadInbox()">새로고침</button>${wide() ? '<button class="btn sm ghost" onclick="exportCSV()">엑셀(CSV) 내려받기</button>' : ''}</div>
       ${srvState === 'err' ? `<div class="okline bad">접수 서버에 연결하지 못했어요. 인터넷이나 서버 주소를 확인하세요.</div>` : srvState === 'auth' ? `<div class="okline bad">관리자 키가 맞지 않아요. 설정에서 확인하세요.</div>` : ''}</div>
-    <div class="inbox">${items.length ? items.map(subCard).join('') : `<div class="card empty">${inFilter === 'new' ? '새로 받은 근무표가 없어요.<br>앱에서 보내면 여기에 자동으로 나타나요.' : '해당하는 근무표가 없어요.'}</div>`}</div>`}
+    ${!items.length ? `<div class="card empty" style="margin-top:12px">${inFilter === 'new' ? '새로 받은 근무표가 없어요.<br>앱에서 보내면 여기에 자동으로 나타나요.' : '해당하는 근무표가 없어요.'}</div>`
+      : wide() ? subTable(items) : `<div class="inbox">${items.map(subCard).join('')}</div>`}`}
     <details class="fold" ${noSrv ? 'open' : ''}><summary>메일·카카오톡으로 받은 코드 붙여넣기</summary><div>
       <textarea class="inp ${pasteErr ? 'bad' : ''}" id="pasteIn" rows="5" placeholder="[교대링 근무표 등록 요청]&#10;회사: ...&#10;&#10;CHAN1:eyJr..." oninput="pasteErr='';this.classList.remove('bad');const e=$('#pErr');if(e)e.remove()"></textarea>
       ${pasteErr ? `<div class="ferr" id="pErr">${esc(pasteErr)}</div>` : ''}
@@ -302,34 +402,63 @@ function renderReview() {
         <button class="btn ghost" onclick="newBlank()">직접 새로 만들기</button><button class="btn pri" onclick="loadPaste()">불러와서 확인</button></div></div></details>`;
 }
 const sameCo = x => DATA.companies.find(c => c.name.trim() === String(x.name || '').trim() && (c.region || '') === (x.region || ''));
+function doneEv(x) { return x.status === 'new' ? null : (lastEv(x, x.status) || { t: x.doneAt, by: x.by }); }
 function subCard(x) {
-  const ex = sameCo(x);
+  const ex = sameCo(x), e = doneEv(x);
   return `<div class="sub ${x.status === 'new' ? 'new' : ''}" onclick="openSub('${esc(x.id)}')"><span class="av">${esc([...String(x.name)][0] || '?')}</span>
-    <div class="tx"><div class="t1"><b>${esc(x.name)}</b>${x.region ? `<span style="color:var(--sub);font-size:14px">${esc(x.region)}</span>` : ''}<span class="st ${esc(x.status)}">${ST_NAME[x.status] || esc(x.status)}</span>${ex && x.status !== 'approved' ? '<span class="tag">이미 등록됨 · 업데이트</span>' : ''}</div>
-      <div class="t2">${[x.dept, x.teams ? x.teams + '개 조' : '', x.cycle ? x.cycle + '일 주기' : '', ago(x.at)].filter(Boolean).map(esc).join(' · ')}</div>
-      ${x.note ? `<div class="memo">“${esc(x.note)}”</div>` : ''}${x.memo && x.status !== 'new' ? `<div class="t2" style="margin-top:6px">처리 메모: ${esc(x.memo)}</div>` : ''}</div>
+    <div class="tx"><div class="t0">${esc(noOf(x))}</div>
+      <div class="t1"><b>${esc(x.name)}</b>${x.region ? `<span class="rg">${esc(x.region)}</span>` : ''}<span class="st ${esc(x.status)}">${ST_NAME[x.status] || esc(x.status)}</span>${ex && x.status !== 'approved' ? '<span class="tag">이미 등록됨 · 업데이트</span>' : ''}</div>
+      <div class="t2">${[x.dept, x.teams ? x.teams + '개 조' : '', x.cycle ? x.cycle + '일 주기' : ''].filter(Boolean).map(esc).join(' · ')}</div>
+      <div class="t3"><span class="lb">접수</span>${esc(shortDT(x.at))} <i>${ago(x.at)}</i></div>
+      ${e ? `<div class="t3"><span class="lb">${ST_NAME[x.status] ? ST_NAME[x.status].replace('됨', '') : '처리'}</span>${esc(shortDT(e.t))}${e.by ? ' · ' + esc(e.by) : ''}</div>` : ''}
+      ${x.note ? `<div class="memo">“${esc(x.note)}”</div>` : ''}${x.memo && x.status === 'rejected' ? `<div class="t2" style="margin-top:6px">거절 사유: ${esc(x.memo)}</div>` : ''}</div>
     <span class="go">›</span></div>`;
+}
+function subTable(items) {
+  return `<div class="card tbl" style="margin-top:12px"><table class="dt"><thead><tr><th>접수번호</th><th>접수 일시</th><th>회사</th><th>사업장 · 부서</th><th>조 · 주기</th><th>상태</th><th>처리 일시</th><th>처리자</th><th>걸린 시간</th></tr></thead><tbody>
+    ${items.map(x => {
+      const e = doneEv(x), a = kdt(x.at), b = e && kdt(e.t);
+      return `<tr class="${x.status === 'new' ? 'nw' : ''}" onclick="openSub('${esc(x.id)}')"><td class="mono">${esc(noOf(x))}</td><td>${tableDT(x.at)}</td>
+        <td><b class="co">${esc(x.name)}</b>${x.note ? `<div class="nt">“${esc(x.note)}”</div>` : ''}</td><td>${esc([x.region, x.dept].filter(Boolean).join(' · ') || '—')}</td>
+        <td>${x.teams}개 조 · ${x.cycle}일</td><td><span class="st ${esc(x.status)}">${ST_NAME[x.status] || esc(x.status)}</span></td>
+        <td>${e ? tableDT(e.t) : '<span class="tm">—</span>'}</td><td>${esc((e && e.by) || '—')}</td>
+        <td class="mono">${a && b ? dur(b.ms - a.ms) : a && x.status === 'new' ? `<span style="color:var(--warn)">${dur(Date.now() - a.ms)} 대기 중</span>` : '—'}</td></tr>`;
+    }).join('')}</tbody></table></div>`;
+}
+function exportCSV() {
+  const q = v => '"' + String(v == null ? '' : v).replace(/"/g, '""') + '"';
+  const rows = [['접수번호', '접수 일시', '회사', '사업장', '부서', '조', '주기(일)', '상태', '처리 일시', '처리자', '처리 메모', '보낸 사람 메모', '처리 기록']];
+  INBOX.items.forEach(x => { const e = doneEv(x) || {}; rows.push([noOf(x), x.at, x.name, x.region, x.dept, x.teams, x.cycle, ST_NAME[x.status] || x.status, e.t || '', e.by || '', x.memo, x.note, (x.log || []).map(v => `${v.t} ${(EV[v.e] || [v.e])[0]}${v.by ? ' (' + v.by + ')' : ''}`).join(' → ')]); });
+  const csv = '﻿' + rows.map(r => r.map(q).join(',')).join('\r\n');
+  if (window.AdminApp && AdminApp.shareFile) { AdminApp.shareFile('교대링_접수내역.csv', csv); return; }
+  const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv' })); a.download = `교대링_접수내역_${todayStr()}.csv`; a.click();
+  setTimeout(() => URL.revokeObjectURL(a.href), 2000);
 }
 
 /* 접수 서버 */
 async function api(action, extra) {
-  const r = await fetch(SRV.url, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(Object.assign({ action, key: SRV.key }, extra || {})), redirect: 'follow' });
+  const r = await fetch(SRV.url, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(Object.assign({ action, key: SRV.key, by: SRV.by || '관리자' }, extra || {})), redirect: 'follow' });
   if (!r.ok) throw 'http';
   const j = await r.json();
   if (!j.ok) throw j.err || 'fail';
   return j;
+}
+function tellApp() {
+  if (!(window.AdminApp && AdminApp.seen)) return;
+  const nw = INBOX.items.filter(x => x.status === 'new').map(x => x.at).sort();
+  try { AdminApp.seen(INBOX.counts.new || 0, nw[nw.length - 1] || ''); } catch (e) { }
 }
 let _inboxBusy = false;
 async function loadInbox(quiet) {
   if (!SRV.url || !SRV.key || _inboxBusy) return;
   _inboxBusy = true; srvState = 'busy'; updHeader(); if (!quiet && view === 'review' && !D) renderReview();
   try {
-    const j = await api('list', { limit: 300 });
-    const before = (INBOX.counts && INBOX.counts.new) || 0, had = !!INBOX.at;
+    const j = await api('list', { limit: 500 });
+    const before = new Set(INBOX.items.filter(x => x.status === 'new').map(x => x.id)), had = !!INBOX.at;
     INBOX = { items: j.items || [], counts: j.counts || {}, at: Date.now() }; LSset('gyAdminInbox', INBOX);
-    srvState = 'ok';
-    if (window.AdminApp && AdminApp.seen) try { AdminApp.seen(INBOX.counts.new || 0); } catch (e) { }
-    if (quiet && had && (INBOX.counts.new || 0) > before) toast(`새 근무표 ${(INBOX.counts.new || 0) - before}건이 들어왔어요`);
+    srvState = 'ok'; tellApp();
+    const fresh = INBOX.items.filter(x => x.status === 'new' && !before.has(x.id));
+    if (quiet && had && fresh.length) toast(`새 근무표 ${fresh.length}건 도착 · ${fresh[0].name}${fresh[0].region ? ' ' + fresh[0].region : ''}`);
   } catch (e) { srvState = e === 'auth' ? 'auth' : 'err'; }
   _inboxBusy = false;
   updHeader(); if (view === 'review' && !D) renderReview();
@@ -344,16 +473,29 @@ function openSub(id) {
   const ex = sameCo(p);
   startEdit(p, ex ? ex.key : undefined);
   D.subId = id; D.subStatus = x.status; D.appName = appName; render();
+  // 처음 열면 '검토 시작'을 서버 시각으로 기록
+  if (!lastEv(x, 'viewed') && x.status === 'new') logSub(id, 'viewed').then(() => { if (D && D.subId === id) { const b = $('#tlBox'); if (b) b.innerHTML = timeline(x); } });
 }
 async function setSub(id, status, memo) {
   try {
-    await api('status', { id, status, memo: memo || '' });
+    const j = await api('status', { id, status, memo: memo || '' });
     const x = INBOX.items.find(i => i.id === id);
-    if (x) { if (INBOX.counts[x.status]) INBOX.counts[x.status]--; x.status = status; x.memo = memo || ''; INBOX.counts[status] = (INBOX.counts[status] || 0) + 1; LSset('gyAdminInbox', INBOX); }
-    if (window.AdminApp && AdminApp.seen) try { AdminApp.seen(INBOX.counts.new || 0); } catch (e) { }
-    updHeader();
+    if (x) {
+      if (INBOX.counts[x.status]) INBOX.counts[x.status]--;
+      x.status = status; x.memo = memo || ''; x.doneAt = j.time; x.by = SRV.by || '관리자';
+      (x.log = x.log || []).push({ t: j.time, e: status, by: x.by, m: memo || '' });
+      INBOX.counts[status] = (INBOX.counts[status] || 0) + 1; LSset('gyAdminInbox', INBOX);
+    }
+    tellApp(); updHeader();
     return true;
   } catch (e) { toast(e === 'auth' ? '관리자 키가 맞지 않아요' : '접수 서버에 상태를 저장하지 못했어요'); return false; }
+}
+async function logSub(id, event, memo) {
+  try {
+    const j = await api('log', { id, event, memo: memo || '' });
+    const x = INBOX.items.find(i => i.id === id);
+    if (x && j.changed) { (x.log = x.log || []).push({ t: j.time, e: event, by: SRV.by || '관리자', m: memo || '' }); LSset('gyAdminInbox', INBOX); }
+  } catch (e) { }
 }
 function holdSub() {
   modal('보류할까요?', '나중에 다시 확인할 근무표로 옮겨요.\n고친 내용은 저장되지 않아요.', [{ t: '취소' }, { t: '보류', cls: 'pri', fn: async () => { const id = D.subId; if (await setSub(id, 'hold', '')) { D = null; render(); toast('보류로 옮겼어요'); } } }]);
@@ -371,6 +513,8 @@ async function doReject() {
   closeModal(); const id = D.subId;
   if (await setSub(id, 'rejected', [r, etc].filter(Boolean).join(' / '))) { D = null; render(); toast('거절했어요'); }
 }
+let _rw = 0;
+window.addEventListener('resize', () => { clearTimeout(_rw); _rw = setTimeout(() => { if (view === 'review' && !D) renderReview(); }, 150); });
 async function pasteClip() {
   try { const t = window.AdminApp && AdminApp.getClipboard ? AdminApp.getClipboard() : await navigator.clipboard.readText(); $('#pasteIn').value = t; pasteErr = ''; loadPaste(); }
   catch (e) { toast('클립보드를 읽을 수 없어요. 직접 붙여넣어 주세요'); $('#pasteIn').focus(); }
@@ -418,10 +562,10 @@ function renderEditor() {
   const c = D.c, L = c.pattern.length, e = D.err;
   const ex = DATA.companies.find(x => x.key === D.key);
   $('#main').innerHTML = `<div class="layout"><div>
-    ${D.subId ? `<div class="card" style="background:#F3F6FF"><div class="ct" style="margin-bottom:6px">받은 근무표 <span class="st ${D.subStatus}">${ST_NAME[D.subStatus] || ''}</span><small>${D.at ? esc(D.at) + ' 받음 (' + ago(D.at) + ')' : ''}</small></div>
-      ${D.userNote ? `<div style="font-size:14px;line-height:1.55;background:#FFF9EC;border-radius:10px;padding:9px 12px">“${esc(D.userNote)}”</div>` : '<div style="font-size:13px;color:var(--sub)">보낸 사람 메모 없음</div>'}
-      ${D.appName && D.appName.replace(/\s/g, '') !== [D.name, D.region].join('').replace(/[\s()]/g, '') && D.appName.replace(/\s/g, '') !== D.name.replace(/\s/g, '') ? `<div class="okline info" style="margin-top:8px">보낸 사람 앱의 근무표 이름: <b>${esc(D.appName)}</b> — 회사 이름·지역이 맞는지 확인하세요</div>` : ''}
-      <div style="font-size:12.5px;color:var(--sub);margin-top:8px;line-height:1.55">달력에서 조를 바꿔 보며 확인하고, 맞으면 <b>승인 · 등록</b>을 누르세요. 바로 앱에 배포돼요.</div></div>`
+    ${D.subId ? (() => { const sx = INBOX.items.find(i => i.id === D.subId) || {}; return `<div class="card" style="background:#F3F6FF"><div class="ct" style="margin-bottom:4px">받은 근무표 <span class="st ${D.subStatus}">${ST_NAME[D.subStatus] || ''}</span><span class="sp"></span><small style="font-family:ui-monospace,Consolas,monospace">${esc(noOf(sx))}</small></div>
+      ${D.userNote ? `<div style="font-size:14px;line-height:1.55;background:#FFF9EC;border-radius:10px;padding:9px 12px;margin-bottom:8px">“${esc(D.userNote)}”</div>` : ''}
+      ${D.appName && D.appName.replace(/\s/g, '') !== [D.name, D.region].join('').replace(/[\s()]/g, '') && D.appName.replace(/\s/g, '') !== D.name.replace(/\s/g, '') ? `<div class="okline info blk" style="margin:0 0 8px">보낸 사람 앱의 근무표 이름: <b>${esc(D.appName)}</b> — 회사 이름·지역이 맞는지 확인하세요</div>` : ''}
+      <div class="lbl" style="margin-top:4px">처리 기록</div><div id="tlBox">${timeline(sx)}</div></div>`; })()
       : D.userNote ? `<div class="card" style="background:#FFF9EC"><div class="ct" style="margin-bottom:6px">보낸 사람 메모 <small>${D.at ? esc(D.at) + ' 보냄' : ''}</small></div><div style="font-size:14px;line-height:1.55">${esc(D.userNote)}</div></div>` : ''}
     <button class="btn blue pvjump" style="width:100%;margin-bottom:12px" onclick="$('#pvBox').scrollIntoView({behavior:'smooth'})">달력 미리보기로 바로 가기 ↓</button>
     <div class="card"><div class="ct">등록 정보 ${ex ? `<span class="tag">기존 v${ex.ver || 1} 업데이트</span>` : '<span class="tag new">새 회사</span>'}</div>
@@ -524,7 +668,8 @@ function movePv(k) { pv.m += k; if (pv.m < 1) { pv.m = 12; pv.y--; } if (pv.m > 
 function buildItem() {
   const c = clone(D.c); c.teams.forEach(t => t.offset = mod(t.offset || 0, c.pattern.length));
   const ex = DATA.companies.find(x => x.key === D.key);
-  return { key: D.key.trim(), name: D.name.trim(), region: D.region.trim(), dept: D.dept.trim(), note: D.note.trim(), ver: ex ? (ex.ver || 1) + 1 : 1, added: ex ? ex.added || todayStr() : todayStr(), updated: todayStr(), c };
+  const nowDT = (() => { const d = new Date(); return `${todayStr()} ${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`; })();
+  return { key: D.key.trim(), name: D.name.trim(), region: D.region.trim(), dept: D.dept.trim(), note: D.note.trim(), ver: ex ? (ex.ver || 1) + 1 : 1, added: ex ? ex.added || todayStr() : todayStr(), updated: todayStr(), addedAt: ex ? ex.addedAt || '' : nowDT, updatedAt: nowDT, c };
 }
 let busyApprove = false;
 function approve() {
@@ -542,7 +687,10 @@ function approve() {
     busyApprove = true; renderBar();
     let saved = false;
     if (GH.token) saved = await saveGH(true);
-    if (subId) await setSub(subId, 'approved', `${it.key} v${it.ver}${saved ? '' : ' (GitHub 저장 전)'}`);
+    if (subId) {
+      await setSub(subId, 'approved', `등록 ID ${it.key} · v${it.ver}`);
+      if (saved) await logSub(subId, 'deployed', `companies.json 저장${LAST_COMMIT ? ' · 커밋 ' + LAST_COMMIT.slice(0, 7) : ''} · 앱 반영까지 최대 5분`);
+    }
     busyApprove = false; D = null; view = subId ? 'review' : 'list'; render(); window.scrollTo(0, 0);
     toast(saved ? `'${it.name}' 등록 완료! 사용자 앱에는 몇 분 안에 나타나요` : `'${it.name}' ${i >= 0 ? '업데이트' : '추가'}했어요. 아래 'GitHub에 저장'을 눌러야 반영돼요`);
   };
@@ -569,7 +717,7 @@ function renderList() {
 function renderListRows() {
   const q = listQ.trim().toLowerCase().replace(/\s/g, '');
   const hits = DATA.companies.filter(x => !q || [x.name, x.region, x.dept, x.key].join('').toLowerCase().replace(/\s/g, '').includes(q));
-  $('#listRows').innerHTML = hits.length ? hits.map(x => `<div class="it"><span class="ico">${esc([...x.name][0] || '?')}</span><div class="tx"><b>${esc(x.name)}<span class="tag" style="background:var(--soft);color:var(--sub)">v${x.ver || 1}</span></b><small>${[x.region, x.dept, `${x.c.teams.length}개 조`, `${x.c.pattern.length}일 주기`, `ID ${x.key}`].filter(Boolean).map(esc).join(' · ')}</small></div>
+  $('#listRows').innerHTML = hits.length ? hits.map(x => `<div class="it"><span class="ico">${esc([...x.name][0] || '?')}</span><div class="tx"><b>${esc(x.name)}<span class="tag" style="background:var(--soft);color:var(--sub)">v${x.ver || 1}</span></b><small>${[x.region, x.dept, `${x.c.teams.length}개 조`, `${x.c.pattern.length}일 주기`, `ID ${x.key}`].filter(Boolean).map(esc).join(' · ')}</small><small>${x.addedAt ? '등록 ' + esc(shortDT(x.addedAt)) : x.added ? '등록 ' + esc(x.added) : ''}${(x.updatedAt || x.updated) && (x.ver || 1) > 1 ? ' · 마지막 수정 ' + esc(x.updatedAt ? shortDT(x.updatedAt) : x.updated) : ''}</small></div>
       <button class="btn sm" onclick="editItem('${esc(x.key)}')">편집</button><button class="btn sm red" onclick="delItem('${esc(x.key)}')">삭제</button></div>`).join('')
     : `<div class="empty">${DATA.companies.length ? '검색 결과가 없어요' : '아직 등록된 회사가 없어요.<br>받은 근무표를 확인하고 승인하면 여기에 쌓여요.'}</div>`;
 }
@@ -612,6 +760,7 @@ async function ghLoad(silent) {
     return 'ok';
   } catch (e) { ghState = GH.token ? 'err' : 'none'; updHeader(); if (!silent) toast(e === 401 || e === 403 ? '토큰 권한을 확인해 주세요' : 'GitHub에 연결하지 못했어요'); return 'err'; }
 }
+let LAST_COMMIT = '';
 async function saveGH(quiet) {
   if (!GH.token) { if (quiet) return false; modal('GitHub 토큰이 필요해요', "'설정' 탭에서 저장소와 토큰을 먼저 넣어주세요. 토큰 없이도 '파일로 내려받기'로 받은 파일을 GitHub에 직접 올릴 수 있어요.", [{ t: '닫기' }, { t: '연결하러 가기', cls: 'pri', fn: () => tab('set') }]); return; }
   const btn = document.querySelector('#actbar .btn.blue'); if (btn) { btn.disabled = true; btn.textContent = '저장 중…'; }
@@ -625,7 +774,7 @@ async function saveGH(quiet) {
       if (g.ok) { const j = await g.json(); modal('GitHub에 더 새로운 목록이 있어요', '다른 곳(PC·폰)에서 먼저 저장했어요. 내 목록으로 덮어쓸까요?\n덮어쓰기 전에 등록된 목록을 확인하세요.', [{ t: '취소' }, { t: '덮어쓰기', cls: 'red', fn: () => { SHA = j.sha; persist(); saveGH(); } }]); renderBar(); return false; }
     }
     if (!r.ok) throw r.status;
-    const j = await r.json(); SHA = j.content.sha; DIRTY = 0; DATA.updated = todayStr(); ghState = 'ok'; persist();
+    const j = await r.json(); SHA = j.content.sha; LAST_COMMIT = (j.commit && j.commit.sha) || ''; DIRTY = 0; DATA.updated = todayStr(); ghState = 'ok'; persist();
     if (!quiet) { render(); toast('저장했어요. 사용자 앱에는 몇 분 안에 반영돼요'); }
     return true;
   } catch (e) { ghState = 'err'; updHeader(); toast(e === 401 || e === 403 ? '토큰 권한이 없어요. Contents: Read and write 권한을 확인하세요' : e === 404 ? '저장소를 찾을 수 없어요. 이름을 확인하세요' : 'GitHub에 저장하지 못했어요. 잠시 후 다시 시도하세요'); return false; }
@@ -637,6 +786,7 @@ function renderSettings() {
     <div class="card"><div class="ct">① 근무표 접수 서버 <small>앱에서 보낸 근무표가 들어오는 곳</small></div>
       <div class="f"><label class="lbl">서버 주소 (웹 앱 URL)</label><input class="inp" id="sU" value="${esc(SRV.url)}" placeholder="https://script.google.com/macros/s/.../exec" style="font-size:13px" autocomplete="off"></div>
       <div class="f"><label class="lbl">관리자 키 (서버 코드 맨 위 ADMIN_KEY)</label><div class="row" style="gap:6px"><input class="inp" id="sK" type="password" value="${esc(SRV.key)}" autocomplete="off"><button class="btn ghost" onclick="const i=$('#sK');i.type=i.type==='password'?'text':'password'">보기</button></div></div>
+      <div class="f"><label class="lbl">처리자 이름 (처리 기록에 남아요)</label><input class="inp" id="sB" value="${esc(SRV.by || '')}" placeholder="예: 찬민 (PC)" maxlength="30"></div>
       <div class="row" style="gap:8px;flex-wrap:wrap"><button class="btn pri" onclick="saveSrv()">저장하고 연결 확인</button></div>
       ${srvTest ? `<div class="okline ${srvTest[0]}">${esc(srvTest[1])}</div>` : ''}</div>
     <div class="card"><div class="ct">② 교대링 앱에 서버 알려주기 <small>처음 한 번 (주소가 바뀌면 다시)</small></div>
@@ -648,10 +798,20 @@ function renderSettings() {
       <div class="grid2 f"><div><label class="lbl">브랜치</label><input class="inp" id="gB" value="${esc(GH.branch)}"></div><div><label class="lbl">파일 경로</label><input class="inp" id="gP" value="${esc(GH.path)}"></div></div>
       <div class="f"><label class="lbl">토큰 (이 기기에만 저장돼요)</label><div class="row" style="gap:6px"><input class="inp" id="gT" type="password" value="${esc(GH.token)}" placeholder="github_pat_..." autocomplete="off"><button class="btn ghost" onclick="const i=$('#gT');i.type=i.type==='password'?'text':'password'">보기</button></div></div>
       <div class="row" style="gap:8px;flex-wrap:wrap"><button class="btn pri" onclick="saveGHSet()">저장하고 연결 확인</button><button class="btn ghost" onclick="ghLoad()">목록 다시 불러오기</button>${GH.token ? `<button class="btn red" onclick="GH.token='';LSset('gyAdminGH',GH);renderSettings();updHeader()">토큰 지우기</button>` : ''}</div></div>
-    ${inApp ? `<div class="card"><div class="ct">④ 알림</div><div style="font-size:13.5px;color:var(--sub);line-height:1.6">새 근무표가 들어오면 폰 알림으로 알려줘요. (15~30분마다 확인)</div>
-      <label class="ck" style="font-size:14px;color:var(--ink);margin-top:10px;gap:8px"><input type="checkbox" ${LS('gyAdminNotify') !== false ? 'checked' : ''} onchange="LSset('gyAdminNotify',this.checked);syncApp()"> 새 근무표 알림 받기</label></div>` : ''}
+    ${inApp ? (() => { let ns = {}; try { ns = JSON.parse(AdminApp.status()); } catch (e) { } return `<div class="card"><div class="ct">④ 폰 알림</div>
+      <div style="font-size:13.5px;color:var(--sub);line-height:1.6">새 근무표가 들어오면 폰 알림으로 알려줘요. 앱을 꺼 두어도 약 10분마다 확인해요. (안드로이드 절전 상태에 따라 조금 늦을 수 있어요)</div>
+      <label class="ck" style="font-size:14px;color:var(--ink);margin-top:10px;gap:8px"><input type="checkbox" ${LS('gyAdminNotify') !== false ? 'checked' : ''} onchange="LSset('gyAdminNotify',this.checked);syncApp();renderSettings()"> 새 근무표 알림 받기</label>
+      ${ns.notif === false ? `<div class="okline bad">폰 설정에서 알림이 꺼져 있어요<button class="btn sm" style="margin-left:auto" onclick="AdminApp.openNotifSettings()">알림 켜기</button></div>` : ''}
+      ${ns.battery === false ? `<div class="okline info">절전 예외로 두면 알림이 더 정확해요<button class="btn sm" style="margin-left:auto" onclick="AdminApp.openBattery()">설정</button></div>` : ''}
+      ${ns.lastCheck ? `<div class="okline info">마지막 자동 확인: ${esc(ns.lastCheck)}${ns.lastResult ? ' · ' + esc(ns.lastResult) : ''}</div>` : ''}
+      <div class="row" style="gap:8px;margin-top:10px;flex-wrap:wrap"><button class="btn" onclick="AdminApp.testNotify();toast('테스트 알림을 보냈어요')">알림 테스트</button><button class="btn ghost" onclick="AdminApp.checkNow();toast('서버에 확인 중이에요. 새 근무표가 있으면 알림이 와요')">지금 확인</button></div></div>`; })() : ''}
   </div>
-  <div><div class="card"><div class="ct">접수 서버 처음 만들기 <small>PC에서 하면 편해요 · 10분</small></div>
+  <div>${!inApp ? `<div class="card" style="background:#EEF7F2"><div class="ct">💻 PC 프로그램으로 쓰기</div>
+      ${isInstalled() ? '<div class="okline ok">프로그램으로 실행 중이에요 ✓ 작업 표시줄에 고정해 두면 편해요</div>'
+        : location.protocol !== 'https:' ? '<div style="font-size:13.5px;color:var(--sub);line-height:1.6">인터넷 주소(<code>scm0726.github.io/gyodaering-data/admin/</code>)로 열면 프로그램처럼 설치할 수 있어요.</div>'
+        : installEvt ? `<div style="font-size:13.5px;color:var(--sub);line-height:1.6">버튼 한 번이면 바탕화면·시작 메뉴에 '교대링 관리'가 생기고, 따로 창으로 열려요.</div><button class="btn pri" style="margin-top:10px" onclick="installApp()">PC에 설치하기</button>`
+        : '<div style="font-size:13.5px;color:var(--sub);line-height:1.7">크롬: 주소창 오른쪽 <b>설치 아이콘(⊕)</b> 또는 <b>⋮ → 전송, 저장, 공유 → 페이지를 앱으로 설치</b><br>엣지: <b>… → 앱 → 이 사이트를 앱으로 설치</b></div>'}</div>` : ''}
+    <div class="card"><div class="ct">접수 서버 처음 만들기 <small>PC에서 하면 편해요 · 10분</small></div>
     <ol class="steps">
       <li><b>구글 시트 만들기</b> — <code>sheets.new</code> 에서 빈 시트를 만들고 이름을 <b>교대링 근무표 접수</b>로 바꿔요</li>
       <li>메뉴 <b>확장 프로그램 → Apps Script</b> → 원래 있던 코드를 지우고 <b>Code.gs</b> 내용을 통째로 붙여넣고 저장(💾)</li>
@@ -667,7 +827,7 @@ function renderSettings() {
       <div style="font-size:12.5px;color:var(--sub)">토큰과 관리자 키는 이 기기에만 저장돼요. 남의 기기에서 썼다면 지워 주세요.</div></div></div></div>`;
 }
 async function saveSrv() {
-  SRV = { url: $('#sU').value.trim(), key: $('#sK').value.trim() }; LSset('gyAdminSrv', SRV); syncApp();
+  SRV = { url: $('#sU').value.trim(), key: $('#sK').value.trim(), by: $('#sB').value.trim() || '관리자' }; LSset('gyAdminSrv', SRV); syncApp();
   if (!/^https:\/\/script\.google(usercontent)?\.com\//.test(SRV.url)) { srvTest = ['bad', '주소가 이상해요. https://script.google.com/macros/s/…/exec 형태여야 해요']; renderSettings(); return; }
   if (!SRV.key) { srvTest = ['bad', '관리자 키를 넣어 주세요']; renderSettings(); return; }
   srvTest = ['info', '확인 중…']; renderSettings();
@@ -729,6 +889,13 @@ loadInbox(true);
 setInterval(() => { if (!document.hidden && view === 'review' && !D) loadInbox(true); }, 60000);
 document.addEventListener('visibilitychange', () => { if (!document.hidden && Date.now() - (INBOX.at || 0) > 20000) loadInbox(true); });
 window.onAppResume = () => { if (Date.now() - (INBOX.at || 0) > 5000) loadInbox(true); };
+// PC 프로그램처럼 설치 (크롬·엣지)
+let installEvt = null;
+window.addEventListener('beforeinstallprompt', e => { e.preventDefault(); installEvt = e; if (view === 'set') renderSettings(); });
+window.addEventListener('appinstalled', () => { installEvt = null; toast('설치했어요! 바탕화면·시작 메뉴에서 열 수 있어요'); if (view === 'set') renderSettings(); });
+const isInstalled = () => matchMedia('(display-mode: standalone)').matches || navigator.standalone;
+function installApp() { if (installEvt) { installEvt.prompt(); installEvt.userChoice.finally(() => { installEvt = null; renderSettings(); }); } }
+if ((location.protocol === 'https:' || location.hostname === 'localhost') && 'serviceWorker' in navigator && !window.AdminApp) navigator.serviceWorker.register('sw.js').catch(() => { });
 
 </script>
 </body>
