@@ -339,10 +339,11 @@ function openSub(id) {
   let p;
   try { p = parseMsg(x.code); }
   catch (e) { modal('읽을 수 없는 근무표예요', (typeof e === 'string' ? e : '코드가 손상됐어요.') + '\n거절로 처리할까요?', [{ t: '닫기' }, { t: '거절', cls: 'red', fn: async () => { if (await setSub(id, 'rejected', '코드 손상')) render(); } }]); return; }
+  const appName = (p.c && p.c.name) || '';
   p.name = x.name || p.name; p.region = x.region || p.region; p.dept = x.dept || p.dept; p.userNote = x.note || p.userNote; p.at = x.at;
   const ex = sameCo(p);
   startEdit(p, ex ? ex.key : undefined);
-  D.subId = id; D.subStatus = x.status; render();
+  D.subId = id; D.subStatus = x.status; D.appName = appName; render();
 }
 async function setSub(id, status, memo) {
   try {
@@ -419,6 +420,7 @@ function renderEditor() {
   $('#main').innerHTML = `<div class="layout"><div>
     ${D.subId ? `<div class="card" style="background:#F3F6FF"><div class="ct" style="margin-bottom:6px">받은 근무표 <span class="st ${D.subStatus}">${ST_NAME[D.subStatus] || ''}</span><small>${D.at ? esc(D.at) + ' 받음 (' + ago(D.at) + ')' : ''}</small></div>
       ${D.userNote ? `<div style="font-size:14px;line-height:1.55;background:#FFF9EC;border-radius:10px;padding:9px 12px">“${esc(D.userNote)}”</div>` : '<div style="font-size:13px;color:var(--sub)">보낸 사람 메모 없음</div>'}
+      ${D.appName && D.appName.replace(/\s/g, '') !== [D.name, D.region].join('').replace(/[\s()]/g, '') && D.appName.replace(/\s/g, '') !== D.name.replace(/\s/g, '') ? `<div class="okline info" style="margin-top:8px">보낸 사람 앱의 근무표 이름: <b>${esc(D.appName)}</b> — 회사 이름·지역이 맞는지 확인하세요</div>` : ''}
       <div style="font-size:12.5px;color:var(--sub);margin-top:8px;line-height:1.55">달력에서 조를 바꿔 보며 확인하고, 맞으면 <b>승인 · 등록</b>을 누르세요. 바로 앱에 배포돼요.</div></div>`
       : D.userNote ? `<div class="card" style="background:#FFF9EC"><div class="ct" style="margin-bottom:6px">보낸 사람 메모 <small>${D.at ? esc(D.at) + ' 보냄' : ''}</small></div><div style="font-size:14px;line-height:1.55">${esc(D.userNote)}</div></div>` : ''}
     <button class="btn blue pvjump" style="width:100%;margin-bottom:12px" onclick="$('#pvBox').scrollIntoView({behavior:'smooth'})">달력 미리보기로 바로 가기 ↓</button>
